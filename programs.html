@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<!-- <title>Linus-J</title> -->
+	<link rel="stylesheet" type="text/css" href="assets/style.css">
+	<link rel="icon" href="favicon.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="index, follow">
+	<meta charset="utf-8">
+	<style type="text/css">
+		@font-face {
+			font-family: "Computer Modern";
+			src: url('assets/otf/cmunrm.otf');
+		}
+		@font-face {
+			font-family: "Computer Modern";
+			src: url('assets/otf/cmunrb.otf');
+			font-weight: bold;
+		}
+		body {
+			font-family: "Computer Modern", sans-serif;
+		}
+	</style>
+</head>
+<body>
+<main>
+<header>
+<h1 id="Title">My System</h1>
+</header>
+<article>
+<h2 id="introduction">Introduction</h2>
+<div class="container">
+	<figure class="profilepic">
+		<img src="assets/pp.png" height="200">
+	</figure>
+	<p>Curated selection of my chosen technologies, designed to enhance productivity and efficiency. Outlines are the general systems I use on both my PC and Laptop as well as pieces of software I use regularly and recommend.</p>
+	
+	<p>Regarding software, my general philosophy for good software is to prioritise free and open-source projects that provide minimalist, effective, and efficient solutions to the purpose they serve. All projects listed below follow these guidelines unless stated otherwise.</p>
+	
+<dl>
+<dt><a href="index.html">🏠 Home </a></dt>
+<dd>Home and projects list.</dd>
+<dt><a href="contact.html">✉️ Contact </a></dt>
+<dd>My contact information.</dd>
+</dl>
+
+</div>
+
+<h2 id="my-projects">Software</h2>
+
+<div class="hover_img">
+	<dl>
+		<dt><h3>📰 Operating Systems + GUI</h3></dt>
+	<a href="assets/gentoosc.png"><dt>🖥️ Gentoo + dwm</dt><span><img src="assets/gentoosc.png" alt="image" height="340" class="borderimg"></a></span>
+	<dd>Gentoo is a Linux distribution that allows for complete control over the software that will be ran on the system. Mostly all software installed on the system is compiled from source including the Linux kernel. Because of this, users can choose to exclude certain features they wish to use in a piece of software, and everything is compiled to run optimally on your specific hardware. Consequently, it is desirable to keep the size of packages installed as small as possible to reduce compilation time, hence why I use the very simple tiling window manager dwm. This system is almost as resource efficient as possible for a Desktop setup and idles at &lt; 1% CPU and RAM.</dd>
+	<a href="assets/manjarosc.png"><dt>💻 Manjaro + xcfe</dt><span><img src="assets/manjarosc.png" alt="image" height="340" class="borderimg"></a></span>
+	<dd>Manjaro is an easy to use, Arch based OS which was my first introduction to Linux operating systems. It is a stable system that I have never had a real issue with. Stick to using the Pacman package manager and avoid flatpak, snap and AppImage to keep life simple. Xfce is lightweight and allows you to create a simple attractive looking desktop environment. I could use a tiling window manager with Arch instead, but I do like to have nicer visuals when using a laptop. </dd>
+	</dl>
+</div>
+
+<h3 id="my-projects">General Software</h3>
+
+<dl>
+<a href=""><dt>🌐 Web browser</dt></a>
+<dd> I use Mozilla Firefox with a slightly edited version of the arkenfox <a href="https://github.com/arkenfox/user.js">user.js</a> file. This user.js file allows you to improve the general privacy of the Firefox browser. I use a variety of extensions, however the most essential extension for all web users is <a href="https://ublockorigin.com/">uBlock Origin</a> used to block ads, trackers and unwanted elements from webpages.</dd>
+<dd> I also occasionally use <a href="https://github.com/ungoogled-software/ungoogled-chromium">ungoogled-chromium</a> if I ever need to use a chromium-based browser for whatever reason.</dd>
+<dd> Most web browsers have their caveats in comparison to other programs I list here and are also the most resource hungry programs I run. Being able to interact with the web tactfully is no small feat and I believe that this is the best solution available today.</dd>
+<a href=""><dt>🔎 Search engine</dt></a>
+<dd>DuckDuckGo. Search the internet without user-tracking. </dd>
+<a href=""><dt><img class="lw" src="assets/codium.svg"> IDE</dt></a>
+<dd>VSCodium. VSCode without telemetry/tracking.</dd>
+<a href=""><dt>💵 Terminal</dt></a>
+<dd>st. Simple terminal, minimal customisable terminal emulator. </dd>
+<a href=""><dt>📄 PDF viewer</dt></a>
+<dd>sioyek. Keyboard based minimal PDF viewer designed with features to allow for comfortable reading of technical documents and research papers.</dd>
+<a href=""><dt>📂 File manager</dt></a>
+<dd>nnn. Minimal customisable CLI file manager.</dd>
+<a href=""><dt>👛 Cryptocurrency wallet</dt></a>
+<dd> I only use Monero as a form of online cash and I use the <a href="https://github.com/monero-project/monero">monero-cli-wallet</a>, which I keep an up-to-date Gentoo package of on my <a href="https://github.com/Linus-J/gentoo-monero">GitHub page</a>.</dd>
+</dl>
+
+<h2 id="my-projects">PC Hardware</h2>
+
+<dl>
+<a href=""><dt><img class="lw" src="assets/gpu.svg"> Graphics Card</dt></a>
+<dd> I use AI in my work and, as of writing, NVIDIA dominate this space compared to anyone else due to their CUDA technology which is widely used in AI projects. Consequently, I use an NVIDIA GeForce RTX 3060 in my PC. There is certainly one big criticism about using NVIDIA Graphics Cards; currently NVIDIA do not provide open-source drivers for any of their cards whereas other providers like AMD do. As a result, sadly, the NVIDIA driver is the only blot of proprietary software on my otherwise fully open-source system (aside from AMD PSP). A list of consumer-grade NVIDIA cards can be found here <a href="https://www.nvidia.com/en-gb/geforce/graphics-cards/compare/">here</a> and in general nowadays >12GB of vRAM is desirable for personal AI workstations.</dd>
+<a href=""><dt><img class="lw" src="assets/cpu.svg"> CPU</dt></a>
+<dd> AMD Ryzen 9 5950X, 16 cores, 32 threads. A compilers dream. </dd>
+<a href=""><dt><img class="lw" src="assets/ram.svg"> Memory</dt></a>
+<dd> 32GB of DDR4 RAM, might increase soon to be able to deal with running large neural networks locally, like <a href="https://github.com/nebuly-ai/nebuly/tree/main/optimization/chatllama">LLMs</a> etc.</dd>
+</dl>
+
+
+<br clear="all">
+</article>
+</main>
+<footer>
+	<div class="hover_qr">
+	<img class="lw" src="assets/xmr.svg"> Monero (<a href="#">QR<span><img src="assets/qr.png" alt="image" height="200" class="borderimg"></span></a>): 
+	
+	</div>
+	<code class="crypto">48jewbtxe4jU3MnzJFjTs3gVFWh2nRrAMWdUuUd7Ubo375LL4SjLTnMRKBrXburvEh38QSNLrJy3EateykVCypnm6gcT9bh</code>
+	<br>
+    <a href="https://linus-j.github.io/">Linus-J, 2023</a>
+</footer>
+
+
+</body></html>

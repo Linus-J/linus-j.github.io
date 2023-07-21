@@ -1,0 +1,113 @@
+h1,h2,h3 {
+	text-align: center ;
+}
+ 
+header h1 {
+	margin: auto ;
+}
+
+h1 { color: #822A8D ; }
+h2 { color: #37A9A0 ; }
+h3 { color: #54C6EB ; }
+
+a {
+	color: #E43A72 ;
+	text-decoration: none ;
+}
+
+dt {
+	font-weight: bold ;
+}
+
+body {
+	background: #08070D ;
+	color: #EDEDF4 ;
+	font-family: ComputerModern, 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
+aside {
+	padding: 0 5em;
+	font-style: italic;
+}
+
+main {
+	max-width: 900px ;
+	margin: auto ;
+}
+
+main > article {
+	margin-bottom: 0 ;
+	margin: auto ;
+}
+
+.hover_qr a { position:relative; }
+.hover_qr a span { position:absolute; display:none; z-index:99; top: -1050%;}
+.hover_qr a:hover span { display:inline; }
+
+.hover_img a { position:relative; }
+.hover_img a span { position:absolute; display:none; z-index:99; top: -1705%;}
+.hover_img a:hover span { display:inline; }
+
+footer {
+	max-width: 800px ;
+	margin-left: auto ;
+	margin-right: auto ;
+	text-align: center ;
+	clear: both ;
+}
+
+.menuactive li {
+	background: #111 ;
+}
+
+.container {
+	align-items: right;
+  }
+  
+.container h2 {
+	text-align: center;
+	margin: auto ;
+	left: 50%;
+	position: relative;
+	transform: translate(-38%, -50%);
+	margin: auto;
+
+}
+
+.container h3 {
+	text-align: center;
+	margin: auto ;
+	left: 50%;
+	position: relative;
+	transform: translate(-38%, -50%);
+	margin: auto;
+
+}
+
+.profilepic{
+	display: inline;
+	margin: auto ;
+	float: right;
+	clear: both ;
+	padding: 20px ;
+	max-width: 300px ;
+}
+
+.borderimg {
+	border: 1px solid #ffffff;
+}
+
+.lw{
+	max-height: .8em;
+	max-width: 1em;
+	vertical-align: middle ;
+}
+
+code {
+	color: #F05219 ;
+	overflow-wrap: break-word ;
+}
+
+.xmr {
+	font-size: small ;
+}
