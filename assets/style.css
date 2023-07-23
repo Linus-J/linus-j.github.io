@@ -22,7 +22,7 @@ dt {
 body {
 	background: #08070D ;
 	color: #EDEDF4 ;
-	font-family: ComputerModern, 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji';
+	font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
 aside {
@@ -54,10 +54,6 @@ footer {
 	margin-right: auto ;
 	text-align: center ;
 	clear: both ;
-}
-
-.menuactive li {
-	background: #111 ;
 }
 
 .container {
