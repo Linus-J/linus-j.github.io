@@ -1,77 +1,134 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
+<meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<title>Linus-J</title>
-	<link rel="stylesheet" type="text/css" href="assets/style.css">
-	<link rel="icon" href="favicon.png">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="robots" content="index, follow">
-	<meta charset="utf-8">
-	<style type="text/css">
-		@font-face {
-			font-family: "Computer Modern";
-			src: url('assets/otf/cmunrm.otf');
-		}
-		@font-face {
-			font-family: "Computer Modern";
-			src: url('assets/otf/cmunrb.otf');
-			font-weight: bold;
-		}
-		body {
-			font-family: "Computer Modern", sans-serif;
-		}
-	</style>
+<title>Linus Jeary</title>
+<meta name="description" content="Linus Jeary — Data Scientist and machine learning researcher working on adversarial robustness and formal verification.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="index, follow">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" type="text/css" href="assets/style.css">
+<link rel="icon" href="favicon.png">
+<meta property="og:title" content="Linus Jeary">
+<meta property="og:description" content="Data Scientist and machine learning researcher — adversarial robustness &amp; formal verification.">
+<meta property="og:type" content="website">
 </head>
-
 <body>
 <main>
-<header>
-	<h1>Linus-J</h1>
+
+<header class="site-header">
+	<h1>Linus Jeary</h1>
+	<p class="tagline"><span class="prompt">$</span> whoami<br>Data Scientist &middot; ML researcher  &middot; London<span class="cursor"></span></p>
+	<nav class="crumbs">
+		<a href="index.html" class="current">~/home</a><span class="sep">/</span><a href="system.html">~/system</a><span class="sep">/</span><a href="contact.html">~/contact</a>
+	</nav>
 </header>
+
 <article>
-<h2 id="introduction">Introduction</h2>
 
-<div class="container">
-	<figure class="profilepic">
-	  <img src="assets/pp.png" height="200">
-	</figure>
-  
-<p>A personal website detailing projects I have worked on. Computer Science with Mathematics graduate and current Artificial Intelligence Masters student.</p>
-<dl>
-<dt><a href="programs.html"><img class="lw" src="assets/linux.svg"> My System </a></dt>
-<dd>Software and hardware I use.</dd>
-<dt><a href="contact.html">✉️ Contact </a></dt>
-<dd>My contact information.</dd>
-</dl>
+<section class="hero">
+	<img class="hero-photo" src="assets/me-thumb.webp" alt="Linus Jeary" width="148" height="148">
+	<div class="hero-text">
+		<p>Data Scientist at Shift Technology in London, building production fraud-detection systems, and a machine learning researcher working on adversarial robustness and formal verification.</p>
+		<p>MSc Artificial Intelligence (King's College London, Distinction) and BSc Computer Science with Mathematics (Warwick). </p>
+		<p>First-authored work on robustness certification for conformal prediction, published at NeurIPS 2024 and extended in Pattern Recognition (2025).</p>
+		<div class="hero-links">
+			<a href="https://github.com/Linus-J">GitHub</a>
+			<a href="https://www.linkedin.com/in/linus-jeary">LinkedIn</a>
+			<a href="https://scholar.google.co.uk/citations?user=MBDXoi0AAAAJ&amp;hl=en">Scholar</a>
+			<a href="contact.html">Contact</a>
+		</div>
+	</div>
+</section>
 
-<h2 id="my-projects">My Projects</h2>
+<div class="term-panel">
+	<div class="term-titlebar">
+		<span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+		<span class="term-title">~/globe.sh</span>
+		<a class="term-credit" href="https://github.com/adamsky/globe">* adamsky/globe</a>
+	</div>
+	<div class="term-body">
+		<pre id="globe" aria-hidden="true"></pre>
+		<div class="clocks">
+			<div class="clock-row you">
+				<div class="clock-label">your time &mdash; <span id="clock-you-place">&hellip;</span></div>
+				<div class="clock-time" id="clock-you-time">--:--:--</div>
+			</div>
+			<div class="clock-row linus">
+				<div class="clock-label">linus' time &mdash; <span class="clock-place">LONDON, UK</span></div>
+				<div class="clock-time" id="clock-linus-time">--:--:--</div>
+			</div>
+		</div>
+	</div>
 </div>
 
-<div class="hover_img">
-	<dl>
-	<a href="https://github.com/Linus-J/prime-safe-opponent-exploitation"><dt>💵 Prime Safe Opponent Exploitation<span><img src="assets/psoe.png" alt="image" height="340" class="borderimg"></a></span></dt>
-	<dd> Code for experiments used in research paper focusing on allowing any player in an imperfect information game to attempt to benefit from exploiting their opponent’s weaknesses. Concepts from game theory are utilised to guarantee a meaningful known worst case payoff.</dd>
-	<a href="https://github.com/Linus-J/autoencoder-from-scratch"><dt>🔢 Autoencoder from Scratch<span><img src="assets/ae.png" alt="image" height="340" class="borderimg"></a></span></dt>
-	<dd>Writing an autoencoder using no convolutional layers in Python and Cython as well as from scratch in C to compare the execution times of each implementation. The encoder and decoder parts are comprised of two dense layers each. The Adam optimiser is included in each model.</dd>
-	<a href="https://github.com/Linus-J/CFR-in-C"><dt><img class="lw" src="assets/cards.svg"> Counterfactual Regret Minimization implementation in C<span><img src="assets/cfr.png" alt="image" height="340" class="borderimg"></a></span></dt>
-	<dd>A project to write Counterfactual Regret Minimization (CFR) algorithms in C to optimise execution speeds for each implementation. CFR is an iterative tree traversal algorithm used to compute optimal strategies in imperfect information games. I implemented three variants of the original algorithm including the most recent optimisations that solve smaller versions of poker games.</dd>
-	<a href="https://github.com/Linus-J/looney-GAN"><dt>🖼️ Generative Adversarial Network to generate cartoon backgrounds<span><img src="assets/looneygan.png" alt="image" height="340" class="borderimg"></a></span></dt>
-	<dd>GAN model that generates cartoon backgrounds similar to those produced by the animators of Looney Tunes (1930-69). The model was trained using the open-source StyleGAN3 network infrastructure provided by NVIDIA.</dd>
-	<a href="https://github.com/Linus-J"><dt>&nbsp;<img class="lw" src="assets/github.svg">&nbsp;&nbsp;GitHub</a></dt>
-	<dd>Other software and projects.</dd>
-	</dl>
+<h2 id="projects">Selected Projects</h2>
+
+<div class="card-grid">
+
+	<article class="card card--text">
+		<div class="card-body">
+			<h3>&#128737;&#65039; Verifiably Robust Conformal Prediction</h3>
+			<p>A framework certifying that conformal prediction coverage guarantees survive adversarial input perturbations, combining conformal prediction with neural network verification. First-authored; NeurIPS 2024, extended in Pattern Recognition (2025).</p>
+			<div class="tags"><span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">Verification</span></div>
+			<div class="card-links">
+				<a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0814a342597d65e0832fc7ec9b42c317-Abstract-Conference.html">NeurIPS 2024 &rarr;</a>
+				<a href="https://github.com/ddv-lab/Verifiably_Robust_CP">GitHub &rarr;</a>
+			</div>
+		</div>
+	</article>
+
+	<article class="card card--text">
+		<div class="card-body">
+			<h3>&#9917; FPL 26/27 Autonomous Bot</h3>
+			<p>An data driven Fantasy Premier League manager: a Monte Carlo projection pipeline, ILP-based squad/transfer optimisation, and a Streamlit dashboard for tracking live squad, fixtures, and decision history. Currently human-in-the-loop final squad selections.</p>
+			<div class="tags"><span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Monte Carlo</span></div>
+			<div class="card-links"><a href="https://github.com/Linus-J/FPL-26-27-bot">GitHub &rarr;</a></div>
+		</div>
+	</article>
+
+	<article class="card card--text">
+		<div class="card-body">
+			<h3>&#9824;&#65039; Prime-Safe Opponent Exploitation</h3>
+			<p>BSc dissertation (Warwick, supervised by P. Turrini): algorithms that exploit a predictable opponent in imperfect-information games while provably keeping an &epsilon;-equilibrium safety margin. Published as an arXiv preprint.</p>
+			<div class="tags"><span class="tag">Python</span><span class="tag">Game Theory</span></div>
+			<div class="card-links">
+				<a href="https://arxiv.org/pdf/2307.12338">arXiv &rarr;</a>
+				<a href="https://github.com/Linus-J/prime-safe-opponent-exploitation">GitHub &rarr;</a>
+			</div>
+		</div>
+	</article>
+
+	<article class="card card--text">
+		<div class="card-body">
+			<h3>&#127183; Counterfactual Regret Minimisation in C</h3>
+			<p>High-performance CFR implementations (vanilla, CFR+, MCCFR) written in C for speed &mdash; roughly 10&times; faster than an equivalent Python version. Computes Nash-equilibrium strategies for imperfect-information games like Kuhn and Leduc poker.</p>
+			<div class="tags"><span class="tag">C</span><span class="tag">Game Theory</span></div>
+			<div class="card-links"><a href="https://github.com/Linus-J/CFR-in-C">GitHub &rarr;</a></div>
+		</div>
+	</article>
+
+	<article class="card card--text">
+		<div class="card-body">
+			<h3>&#128290; Autoencoder from Scratch</h3>
+			<p>The same autoencoder &mdash; two dense encoder/decoder layers, Adam optimiser &mdash; implemented three times (NumPy, Cython, raw C) to compare execution speed across language tiers with no framework dependency.</p>
+			<div class="tags"><span class="tag">Python</span><span class="tag">Cython</span><span class="tag">C</span></div>
+			<div class="card-links"><a href="https://github.com/Linus-J/autoencoder-from-scratch">GitHub &rarr;</a></div>
+		</div>
+	</article>
+
 </div>
 
-<br clear="all">
+<p class="mono" style="text-align:center;margin-top:1.75rem;"><a href="https://github.com/Linus-J">&rarr; more on GitHub</a></p>
+
 </article>
 </main>
+
 <footer>
-	<div class="hover_qr">
-	<img class="lw" src="assets/xmr.svg"> Monero (<a href="assets/qr.png">QR<span><img src="assets/qr.png" alt="image" height="200" class="borderimg"></span></a>): 
-	
-	</div>
-	<code class="xmr">82kC9yzngKaXN4wfkUudXRdaKfdHTmhm618b6BFDViNyhTckJxDUG7cLcb5R9L9ddT2nC19tEm1BN4tLHWz1dY4cBN6Wu9J</code>
-	<br>
-    <a href="https://linus-j.github.io/">Linus-J, 2023</a>
+	<a href="https://linus-j.github.io/">linus-j.github.io</a> &middot; 2026
 </footer>
-</body></html>
+
+<script src="assets/globe.js" defer></script>
+</body>
+</html>
