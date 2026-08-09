@@ -12,10 +12,16 @@ var FplPanel = (function () {
 		return node;
 	}
 
-	function buildPlayerCard(player) {
+	function buildPlayerCard(player, prevIds, prevXpts) {
 		var card = el("div", "fpl-card");
 		card.dataset.playerId = player.player_id;
 		if (player.is_captain) card.classList.add("fpl-card--captain");
+		if (prevIds && !prevIds.has(player.player_id)) card.classList.add("fpl-card--new");
+		if (prevXpts && player.player_id in prevXpts) {
+			var prevMean = prevXpts[player.player_id];
+			var newMean = player.xpts ? player.xpts.mean : null;
+			if (prevMean !== newMean) card.classList.add("fpl-card--changed");
+		}
 
 		var top = el("div", "fpl-card-top");
 		var name = el("span", "fpl-card-name");
@@ -37,7 +43,7 @@ var FplPanel = (function () {
 		return card;
 	}
 
-	function buildSquadSection(squad) {
+	function buildSquadSection(squad, prevIds, prevXpts) {
 		var section = el("section", "fpl-squad");
 		var starters = squad.filter(function (p) { return p.is_starting; });
 		var bench = squad
@@ -50,7 +56,7 @@ var FplPanel = (function () {
 			var label = el("h3", "fpl-position-label");
 			label.textContent = POSITION_LABELS[pos];
 			var list = el("div", "fpl-position-list");
-			players.forEach(function (p) { list.appendChild(buildPlayerCard(p)); });
+			players.forEach(function (p) { list.appendChild(buildPlayerCard(p, prevIds, prevXpts)); });
 			section.appendChild(label);
 			section.appendChild(list);
 		});
@@ -59,7 +65,7 @@ var FplPanel = (function () {
 			var benchLabel = el("h3", "fpl-position-label fpl-position-label--bench");
 			benchLabel.textContent = "Bench";
 			var benchList = el("div", "fpl-position-list");
-			bench.forEach(function (p) { benchList.appendChild(buildPlayerCard(p)); });
+			bench.forEach(function (p) { benchList.appendChild(buildPlayerCard(p, prevIds, prevXpts)); });
 			section.appendChild(benchLabel);
 			section.appendChild(benchList);
 		}
@@ -89,11 +95,39 @@ var FplPanel = (function () {
 		return section;
 	}
 
-	function renderRun(body, run) {
-		body.innerHTML = "";
-		body.appendChild(buildSquadSection(run.squad));
-		body.appendChild(buildTop15Section(run.top15));
-		body.appendChild(buildHistorySection(run.history));
+	function renderRun(body, run, prevRun) {
+		var prevIds = null;
+		var prevXpts = null;
+		if (prevRun) {
+			prevIds = new Set(prevRun.squad.map(function (p) { return p.player_id; }));
+			prevXpts = {};
+			prevRun.squad.forEach(function (p) {
+				prevXpts[p.player_id] = p.xpts ? p.xpts.mean : null;
+			});
+		}
+
+		var newRun = el("div", "fpl-run");
+		newRun.appendChild(buildSquadSection(run.squad, prevIds, prevXpts));
+		newRun.appendChild(buildTop15Section(run.top15));
+		newRun.appendChild(buildHistorySection(run.history));
+
+		if (!prevRun) {
+			body.innerHTML = "";
+			body.appendChild(newRun);
+			return;
+		}
+
+		newRun.classList.add("fpl-run--entering");
+		body.appendChild(newRun);
+		void newRun.offsetWidth; // force reflow so the transition actually plays
+		newRun.classList.remove("fpl-run--entering");
+
+		Array.prototype.slice.call(body.children)
+			.filter(function (node) { return node !== newRun; })
+			.forEach(function (oldRun) {
+				oldRun.classList.add("fpl-run--leaving");
+				oldRun.addEventListener("transitionend", function () { oldRun.remove(); }, { once: true });
+			});
 	}
 
 	return {
