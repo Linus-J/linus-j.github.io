@@ -141,8 +141,9 @@ var FplPanel = (function () {
 
 	return {
 		repo: "Linus-J/FPL-26-27-bot",
+		ref: "v2",
 		path: "data/simulations",
-		fallbackUrl: "https://github.com/Linus-J/FPL-26-27-bot/tree/main/data/simulations",
+		fallbackUrl: "https://github.com/Linus-J/FPL-26-27-bot/tree/v2/data/simulations",
 		renderRun: renderRun,
 	};
 })();

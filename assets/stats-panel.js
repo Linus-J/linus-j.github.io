@@ -5,8 +5,8 @@
 var StatsPanel = (function () {
 	var SUPPORTED_SCHEMA_VERSION = 1;
 
-	function jsDelivrUrl(repo, path, file) {
-		return "https://cdn.jsdelivr.net/gh/" + repo + "@main/" + path + "/" + file;
+	function jsDelivrUrl(repo, ref, path, file) {
+		return "https://cdn.jsdelivr.net/gh/" + repo + "@" + ref + "/" + path + "/" + file;
 	}
 
 	function fetchJson(url) {
@@ -69,7 +69,9 @@ var StatsPanel = (function () {
 		root.setAttribute("data-state", "loading");
 		renderMessage(body, "Loading…");
 
-		return fetchSupportedJson(jsDelivrUrl(panel.repo, panel.path, "index.json"))
+		var ref = panel.ref || "main";
+
+		return fetchSupportedJson(jsDelivrUrl(panel.repo, ref, panel.path, "index.json"))
 			.catch(function () {
 				root.setAttribute("data-state", "error");
 				renderMessage(body, "Couldn't load live data.", panel.fallbackUrl, "View the source repo instead →");
@@ -89,7 +91,7 @@ var StatsPanel = (function () {
 				function loadRun(runId) {
 					root.setAttribute("data-state", "loading");
 					renderMessage(body, "Loading…");
-					return fetchSupportedJson(jsDelivrUrl(panel.repo, panel.path, runId + ".json"))
+					return fetchSupportedJson(jsDelivrUrl(panel.repo, ref, panel.path, runId + ".json"))
 						.then(function (run) {
 							root.setAttribute("data-state", "ready");
 							panel.renderRun(body, run, currentRun);
