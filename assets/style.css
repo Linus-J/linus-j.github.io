@@ -1,21 +1,40 @@
 /* ---------------------------------------------------------------
    Linus Jeary — personal site, v2
-   Terminal-academic minimalism: Computer Modern for prose,
-   system monospace for chrome/UI. Dark theme, no build step.
+   Terminal-academic minimalism: Source Serif 4 for prose,
+   JetBrains Mono for chrome/UI. Dark theme, no build step.
 ------------------------------------------------------------- */
 
-/* Subsetted to the glyphs this site actually uses — ~550KB of
-   full Computer Modern OTFs down to ~42KB. Regenerate from the
-   full otf/cmunrm.otf + cmunrb.otf if new glyphs are ever needed:
-     pyftsubset otf/cmunrm.otf --output-file=otf/cmunrm-subset.otf --unicodes=... */
+/* Source Serif 4 (SIL OFL, see woff2/OFL-sourceserif4.txt) — lower-contrast,
+   screen-friendly serif that keeps the academic feel without Computer
+   Modern's spiky hairline strokes. Subsetted to ASCII + the extra glyphs
+   prose uses (— · … → ε), ~155KB down to ~13KB. Regenerate from the full
+   woff2/sourceserif4*.woff2 if new glyphs are ever needed:
+     pyftsubset woff2/sourceserif4.woff2 --output-file=woff2/sourceserif4-subset.woff2 --flavor=woff2 --unicodes=... */
 @font-face {
-	font-family: "Computer Modern";
-	src: url('otf/cmunrm-subset.otf') format('opentype');
+	font-family: "Source Serif 4";
+	src: url('woff2/sourceserif4-subset.woff2') format('woff2');
 	font-display: swap;
 }
 @font-face {
-	font-family: "Computer Modern";
-	src: url('otf/cmunrb-subset.otf') format('opentype');
+	font-family: "Source Serif 4";
+	src: url('woff2/sourceserif4-bold-subset.woff2') format('woff2');
+	font-weight: bold;
+	font-display: swap;
+}
+
+/* JetBrains Mono (SIL OFL, see woff2/OFL-jetbrainsmono.txt) — subsetted to
+   ASCII + the handful of extra glyphs the terminal chrome uses (— · … →),
+   ~550KB down to ~9KB. Regenerate from the full woff2/jetbrainsmono*.ttf
+   if new glyphs are ever needed:
+     pyftsubset woff2/jetbrainsmono.ttf --output-file=woff2/jetbrainsmono-subset.woff2 --flavor=woff2 --unicodes=... */
+@font-face {
+	font-family: "JetBrains Mono";
+	src: url('woff2/jetbrainsmono-subset.woff2') format('woff2');
+	font-display: swap;
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	src: url('woff2/jetbrainsmono-bold-subset.woff2') format('woff2');
 	font-weight: bold;
 	font-display: swap;
 }
@@ -36,8 +55,8 @@
 	--pink: #ff5c8a;
 	--orange: #ff8952;
 
-	--serif: "Computer Modern", "Iowan Old Style", Georgia, serif;
-	--mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+	--serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+	--mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 
 	--content-w: 780px;
 	--radius: 6px;
