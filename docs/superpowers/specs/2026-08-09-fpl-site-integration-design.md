@@ -137,7 +137,7 @@ assets/
 
 ### 2.2 Display panel: `$ fpl status`
 
-New page or section (matching `$ whoami` / `$ neofetch` voice) fetching `index.json` on load, populating a `<select>` of past runs (most recent selected by default), re-rendering on change.
+A new dedicated page, `fpl-status.html` (matching `system.html`'s pattern — the site's nav is crumb-based across separate pages, not single-page sections), added as a fourth crumb (`~/fpl-status`) alongside `~/home`, `~/system`, `~/contact` on every page. Matches the `$ whoami` / `$ neofetch` voice with its own `$ fpl status` tagline. Fetches `index.json` on load, populates a `<select>` of past runs (most recent selected by default), re-renders on change.
 
 **Squad view — grouped position rows** (confirmed via mockup, over a spatial pitch layout): sections labelled Forwards/Midfielders/Defenders/Goalkeeper/Bench, each a `.term-panel`-styled card row. Captain visually marked (orange border + badge, consistent with the site's existing `--orange` accent). This layout reads cleanly, fits arbitrary squad sizes without spatial cramming, and degrades naturally on mobile (rows just wrap) — the deciding factor over the spatial pitch option in the mockup review.
 
