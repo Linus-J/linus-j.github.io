@@ -3,4 +3,4 @@ My website outling projects I've worked on as well as a list of software and har
 
 Minimal site made with HTML/CSS.
 
-Live site here: [https://linus-j.github.io](https://linus-j.github.io).
+Live site here: [https://linus-j.com](https://linus-j.com).
