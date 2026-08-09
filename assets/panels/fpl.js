@@ -141,7 +141,10 @@ var FplPanel = (function () {
 
 	return {
 		repo: "Linus-J/FPL-26-27-bot",
-		ref: "v2",
+		// jsDelivr's GitHub proxy treats a bare "v2" as a semver-style tag
+		// lookup (matches its vN tag convention), which 404s since v2 is a
+		// branch, not a tag. The fully-qualified ref bypasses that.
+		ref: "refs/heads/v2",
 		path: "data/simulations",
 		fallbackUrl: "https://github.com/Linus-J/FPL-26-27-bot/tree/v2/data/simulations",
 		renderRun: renderRun,
