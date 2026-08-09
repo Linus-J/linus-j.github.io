@@ -355,11 +355,15 @@ with sync_playwright() as p:
 
     whisker_svg = page.locator("#whisker-test svg").count()
     top15_canvas = page.locator("#top15-test canvas").count()
-    axis_text = page.locator("#top15-test text", has_text="Haaland").count()
+    # uPlot is canvas-based (confirms via `ctx.fillText`, not DOM/SVG <text>
+    # nodes -- grep the vendored bundle for `createElementNS`/`fillText` to
+    # see this yourself), so axis labels aren't queryable as DOM text. A
+    # screenshot is the only way to confirm "Haaland" actually renders on
+    # the chart, not just that a canvas exists.
+    page.screenshot(path="/tmp/fpl-status-verify/screenshot-distribution.png")
 
     print("whisker_svg:", whisker_svg)
     print("top15_canvas:", top15_canvas)
-    print("axis_text_haaland:", axis_text)
     print("errors:", errors)
 
     browser.close()
@@ -547,7 +551,7 @@ cp /home/linus/Projects/linus-j.github.io/assets/charts/distribution.js /tmp/fpl
 - [ ] **Step 5: Run the check to verify it passes**
 
 Run the same command as Step 3.
-Expected: `whisker_svg: 1`, `top15_canvas: 1`, `axis_text_haaland: 1` (uPlot renders axis labels as SVG `<text>` inside its canvas overlay layer — this confirms "Haaland" actually appears on the chart, not just that a canvas exists), `errors: []`.
+Expected: `whisker_svg: 1`, `top15_canvas: 1`, `errors: []`. Then look at `/tmp/fpl-status-verify/screenshot-distribution.png` — confirm the top-15 chart shows teal whisker lines with orange mean dots per player, and "Haaland" is legible as an x-axis label (uPlot draws axis text via canvas `fillText`, not DOM/SVG nodes, so this can only be confirmed visually, not queried).
 
 Note on why this chart uses a real chart library (uPlot) for the top-15 comparison but plain inline SVG for each squad card's whisker: the top-15 view benefits from a single shared x-axis scale across 15 players (so relative magnitudes are directly comparable, with real interactive tooltips) — a genuine use for a charting library. Each squad card's whisker is self-scaled to just that one player's own range and doesn't need axes/legends/interactivity, so instantiating 15 separate canvas-based chart objects for the squad view would be wasteful; a tiny hand-drawn SVG is the right tool there instead.
 
