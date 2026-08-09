@@ -942,7 +942,7 @@ var StatsPanel = (function () {
 
 				if (!index.runs || index.runs.length === 0) {
 					root.setAttribute("data-state", "empty");
-					renderMessage(body, "No runs published yet — check back after the next gameweek.");
+					renderMessage(body, "No runs published yet — check back later.");
 					return;
 				}
 
