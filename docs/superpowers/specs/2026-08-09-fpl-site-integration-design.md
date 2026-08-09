@@ -11,10 +11,11 @@ Add a `$ fpl status` section to the portfolio site showing the bot's current squ
 ## Architecture overview
 
 ```
-FPL-26-27-bot (GitHub Actions, cron)
-  run_agent.py --dry-run          (existing: ingest + project + optimise, decision_log)
-  → export_site_data.py           (new: query DB → write data/simulations/{gw}.json + index.json)
-  → commit + push
+FPL-26-27-bot (run manually by you, each gameweek, on your machine)
+  run_weekly.py / run_agent.py --dry-run   (existing: ingest + project + optimise, decision_log)
+  → you review the decision, overrule anything obviously wrong
+  → uv run python scripts/export_site_data.py    (new: query DB → write data/simulations/{gw}.json
+                                                    + index.json → git commit + push)
 
                     ↓ (jsDelivr GH proxy, CORS + caching)
 
@@ -23,7 +24,7 @@ linus-j.github.io (static, vanilla JS, no build step)
   panels/fpl.js (thin config + renderer, uses charts/distribution.js, charts/timeline.js)
 ```
 
-No backend, no server-side code anywhere. The bot repo pushes data on a schedule; the site repo is 100% static and fetches it client-side.
+No backend, no server-side code anywhere, and **no GitHub Actions/CI automation** — the pipeline stays a manual, human-in-the-loop step you run yourself before each gameweek deadline (this is deliberate: it's why the systemd timer was disabled in the first place). Only the export/sync step is new automation, and even that is a command *you* trigger once you're happy with the result, not something that runs unattended.
 
 ---
 
@@ -31,7 +32,7 @@ No backend, no server-side code anywhere. The bot repo pushes data on a schedule
 
 ### 1.1 Export script: `scripts/export_site_data.py`
 
-A standalone script, run *after* `run_agent.py --dry-run` in the same job — not folded into `run_agent.py` itself, so the live decision path is untouched by site-export concerns.
+A standalone script, run manually by you *after* `run_agent.py --dry-run` (or `run_weekly.py`) and *after* you've reviewed/overruled the decision — not folded into `run_agent.py` itself, and not triggered automatically by anything. You run it once you're satisfied the decision_log reflects what you actually want live on the site.
 
 Reuses existing query logic rather than duplicating it:
 - Squad + starting XI + captain/bench: same approach as `dashboard/data/squad.py::get_current_squad`
@@ -40,6 +41,8 @@ Reuses existing query logic rather than duplicating it:
 - Per-player distribution summary: aggregate `projection_samples` for that player/gameweek into `{p10, median, mean, p90}` (5 numbers, not the ~100 raw draws)
 
 Output is written via a shared `_write_run(gw, payload)` helper that also updates `index.json` (append-or-replace the entry for that GW, keep list sorted by GW descending).
+
+After writing both files, the script runs `git add data/simulations`, commits (`export: GW{n} site data`), and pushes — scoped only to that directory, so it can never accidentally sweep up unrelated local changes. It prints a diff summary (files changed, byte sizes) before committing, and supports `--no-push` for a dry run that writes + commits locally without pushing, so you can inspect the result first if you want to.
 
 ### 1.2 JSON schema
 
@@ -82,20 +85,22 @@ Output is written via a shared `_write_run(gw, payload)` helper that also update
 ```
 Sorted most-recent-first. The site fetches only this file up front, then fetches individual run files on demand when the user picks one from the dropdown.
 
-### 1.3 GitHub Actions workflow: `.github/workflows/export-site-data.yml`
+### 1.3 Weekly routine (local, manual — no GitHub Actions)
 
-- **Trigger:** `schedule` cron `0 6 * * 5,6,0` (Fri/Sat/Sun 06:00 UTC — matches the existing disabled systemd timer's target, well ahead of typical FPL deadlines) + `workflow_dispatch` for manual runs.
-- **Scope:** covers only the pre-deadline decision moment (squad/transfers/chips as locked in that run). No post-GW backfill/actual-vs-projected step — confirmed out of scope for this integration; can be added later without a schema break since `history` entries are additive.
-- **Steps:**
-  1. checkout, `uv sync`
-  2. `uv run python -c "from data.db import init_db; init_db()"` — fresh ephemeral SQLite per run (CI has no persistent DB)
-  3. `uv run python scripts/backfill_history.py` — needed context for cold-start/projection quality
-  4. `uv run python scripts/run_agent.py --dry-run` — the real decision pipeline: `run_full_ingest`, odds ingest, Understat ingest, press-signal ingest, projection, optimisation, decision_log write. No browser needed — WhoScored/FBref (which do need Chrome) are separate manual backfill scripts, not part of this cycle, so they're intentionally excluded from CI.
-  5. `uv run python scripts/export_site_data.py`
-  6. Commit + push `data/simulations/**` if changed (`git diff --quiet` guard so unchanged runs — e.g. a rerun — don't create empty commits)
-- **Secrets:** `THE_ODDS_API_KEY`, `GUARDIAN_KEY` (both optional — pipeline degrades gracefully per existing `run_agent.py` warning-and-continue behavior on ingest failure). **No `FPL_EMAIL`/`FPL_PASSWORD`** — dry-run never logs in or submits, so no FPL account credentials are ever placed in CI.
-- **Config:** `FPL_TEAM_ID` as a repo **variable** (`vars.FPL_TEAM_ID`), not a secret — it's the user's public FPL team ID, not sensitive, and keeping it out of Secrets keeps the workflow file/logs self-documenting.
-- Because the DB is ephemeral per run, cross-run history doesn't live in that DB — it lives in the committed JSON files themselves (each `{gw}.json` is written once and kept), so `index.json` is the durable history ledger, not the database.
+No `.github/workflows/` file for this feature. The full loop is:
+
+```bash
+uv run python scripts/run_weekly.py --dry-run     # (or run_agent.py) — as today
+# → you review the decision in the dashboard/logs, manually override anything
+#   obviously wrong via the FPL app / decision_log as you already do
+uv run python scripts/export_site_data.py         # writes data/simulations/{gw}.json +
+                                                    # index.json, commits, pushes
+```
+
+This is a deliberate simplification from the original brief's "GitHub Actions cron" idea: the decision-making run itself stays a manual, reviewed step on your machine (matching why the systemd timer is disabled), and the only new automation is the export/sync — which you also trigger yourself, once, after review. No pipeline runs unattended, no FPL/odds/Guardian credentials ever need to exist as CI secrets, and there's no ephemeral-CI-database problem to design around — `export_site_data.py` just reads whatever is currently in your local `fpl_bot_v2.db`, which already reflects your reviewed/overruled decision.
+
+- **Scope:** covers only the pre-deadline decision moment (squad/transfers/chips as locked in by the run you just reviewed). No post-GW backfill/actual-vs-projected step — confirmed out of scope; can be added later without a schema break since `history` entries are additive.
+- **Credentials:** none needed beyond what already exists in your local `.env` — nothing new to configure.
 
 ### 1.4 Long-term hygiene
 
@@ -142,7 +147,7 @@ New page or section (matching `$ whoami` / `$ neofetch` voice) fetching `index.j
 
 **Switch-simulation transitions:** players keyed by `player_id` across runs. Continuing players animate position/value changes in place (FLIP-style transform transition); players leaving the squad fade+scale out, entering players fade+scale in. Respects `prefers-reduced-motion` (transitions become instant), consistent with the site's existing `@media (prefers-reduced-motion: reduce)` block.
 
-**Graceful degradation:** if `fetch()` fails (network error, jsDelivr outage) or JS doesn't execute, the section falls back to a static message + a link to the bot repo — no broken half-rendered UI. A `<noscript>` block covers the no-JS case specifically. A successfully-fetched but empty `index.json` (`"runs": []` — before the bot repo's first CI run has ever pushed data) is a distinct third state: the site shows a "no runs yet" message rather than treating it as an error.
+**Graceful degradation:** if `fetch()` fails (network error, jsDelivr outage) or JS doesn't execute, the section falls back to a static message + a link to the bot repo — no broken half-rendered UI. A `<noscript>` block covers the no-JS case specifically. A successfully-fetched but empty `index.json` (`"runs": []` — before the first export has ever been pushed) is a distinct third state: the site shows a "no runs yet" message rather than treating it as an error.
 
 **Mobile:** grouped-row squad layout wraps naturally; error-bar cards and timeline entries stack to full width under the same breakpoint pattern already used by `.card`/`.card-grid` (560px).
 
@@ -151,8 +156,8 @@ New page or section (matching `$ whoami` / `$ neofetch` voice) fetching `index.j
 ## Testing / verification plan
 
 - Bot repo: `export_site_data.py` gets a unit test with a seeded in-memory DB asserting schema shape (required keys present, `xpts` objects have all 4 fields, JSON is valid and under a few KB for a realistic squad).
-- Bot repo: workflow tested via `workflow_dispatch` manual trigger before relying on the cron.
-- Site repo: manual verification against the real jsDelivr URLs once the bot repo has pushed at least one run — check index fetch, run fetch, dropdown switch animation, and the offline/error fallback (simulate by fetching a bad URL).
+- Bot repo: manually run `export_site_data.py --no-push` once against real local data to sanity-check the JSON output before ever letting it push.
+- Site repo: manual verification against the real jsDelivr URLs once at least one real run has been pushed — check index fetch, run fetch, dropdown switch animation, and the offline/error fallback (simulate by fetching a bad URL).
 - No automated site tests exist currently (static site, no test suite) — consistent with existing project conventions, not introducing a test framework for this feature alone.
 
 ## Out of scope (explicitly)
@@ -161,3 +166,4 @@ New page or section (matching `$ whoami` / `$ neofetch` voice) fetching `index.j
 - Injury status / next-fixture fields on squad entries — confirmed minimal schema.
 - Brighton / Knicks / England panels — pattern must support them later, but they are not built now.
 - Any change to the live (non-dry-run) decision/submission path — untouched by this work.
+- **Any GitHub Actions / CI automation for the bot pipeline** — the decision run stays manual and human-reviewed each gameweek; only the export/sync step is new, and it too is manually triggered, never scheduled or run unattended.
