@@ -117,6 +117,8 @@ var FplPanel = (function () {
 			return;
 		}
 
+		var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 		newRun.classList.add("fpl-run--entering");
 		body.appendChild(newRun);
 		void newRun.offsetWidth; // force reflow so the transition actually plays
@@ -126,7 +128,14 @@ var FplPanel = (function () {
 			.filter(function (node) { return node !== newRun; })
 			.forEach(function (oldRun) {
 				oldRun.classList.add("fpl-run--leaving");
-				oldRun.addEventListener("transitionend", function () { oldRun.remove(); }, { once: true });
+				// Under reduced motion, fpl-run--leaving changes no animatable
+				// property (see fpl.css), so transitionend never fires — remove
+				// immediately instead of waiting for an event that won't come.
+				if (reducedMotion) {
+					oldRun.remove();
+				} else {
+					oldRun.addEventListener("transitionend", function () { oldRun.remove(); }, { once: true });
+				}
 			});
 	}
 
