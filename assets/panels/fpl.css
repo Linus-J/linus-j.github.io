@@ -1,0 +1,93 @@
+/* ---------------- FPL panel: squad/top15/history layout ---------------- */
+
+.fpl-position-label {
+	font-family: var(--mono);
+	font-size: 0.72rem;
+	color: var(--teal);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	margin: 1.1rem 0 0.5rem;
+	border: none;
+	padding: 0;
+}
+.fpl-position-label--bench { color: var(--fg-faint); }
+.fpl-squad h3:first-child { margin-top: 0; }
+
+.fpl-position-list { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+.fpl-card {
+	background: var(--bg-panel-2);
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	padding: 0.5rem 0.65rem;
+	min-width: 108px;
+	flex: 1 1 108px;
+	transition: border-color 0.15s ease;
+}
+.fpl-card--captain { border-color: var(--orange); }
+
+.fpl-card-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 0.5rem;
+	font-family: var(--mono);
+	font-size: 0.74rem;
+}
+.fpl-card-name { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fpl-card-meta { color: var(--fg-faint); flex-shrink: 0; }
+
+.fpl-card-whisker { margin: 0.35rem 0; }
+
+.fpl-card-value {
+	font-family: var(--mono);
+	font-size: 0.78rem;
+	color: var(--teal);
+}
+
+.fpl-section-heading {
+	font-family: var(--mono);
+	font-size: 0.85rem;
+	color: var(--blue);
+	margin: 1.75rem 0 0.75rem;
+	border: none;
+	padding: 0;
+}
+.fpl-top15 { margin-top: 1.75rem; }
+.fpl-history { margin-top: 1.75rem; }
+
+@media (max-width: 560px) {
+	.fpl-card { flex: 1 1 45%; }
+}
+
+/* ---------------- Switch-run transition ---------------- */
+
+.fpl-run {
+	transition: opacity 0.25s ease;
+	opacity: 1;
+}
+.fpl-run--entering { opacity: 0; }
+.fpl-run--leaving {
+	opacity: 0;
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.fpl-card--new { animation: fpl-card-enter 0.4s ease; }
+@keyframes fpl-card-enter {
+	from { opacity: 0; transform: scale(0.94); }
+	to { opacity: 1; transform: scale(1); }
+}
+
+.fpl-card--changed { animation: fpl-card-pulse 0.7s ease; }
+@keyframes fpl-card-pulse {
+	0% { border-color: var(--blue); }
+	100% { border-color: var(--line); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.fpl-card { transition: none; }
+	.fpl-run, .fpl-card--new, .fpl-card--changed { transition: none; animation: none; }
+	.fpl-run--entering, .fpl-run--leaving { opacity: 1; position: static; }
+}
