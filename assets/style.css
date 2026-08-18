@@ -1,7 +1,8 @@
 /* ---------------------------------------------------------------
-   Linus Jeary — personal site, v2
-   Terminal-academic minimalism: Source Serif 4 for prose,
-   JetBrains Mono for chrome/UI. Dark theme, no build step.
+   Linus Jeary — personal site, v3
+   Editorial minimalism: Source Serif 4 for prose, JetBrains Mono for
+   labels and data. Flat ink ground, square hairline borders, two
+   accents. Dark theme, no build step.
 ------------------------------------------------------------- */
 
 /* Source Serif 4 (SIL OFL, see woff2/OFL-sourceserif4.txt) — lower-contrast,
@@ -23,7 +24,7 @@
 }
 
 /* JetBrains Mono (SIL OFL, see woff2/OFL-jetbrainsmono.txt) — subsetted to
-   ASCII + the handful of extra glyphs the terminal chrome uses (— · … →),
+   ASCII + the handful of extra glyphs the UI chrome uses (— · … → ±),
    ~550KB down to ~9KB. Regenerate from the full woff2/jetbrainsmono*.ttf
    if new glyphs are ever needed:
      pyftsubset woff2/jetbrainsmono.ttf --output-file=woff2/jetbrainsmono-subset.woff2 --flavor=woff2 --unicodes=... */
@@ -40,26 +41,32 @@
 }
 
 :root {
-	--bg: #08070d;
-	--bg-panel: #0f0d18;
-	--bg-panel-2: #141120;
-	--line: #262233;
-	--line-bright: #3a3452;
-	--fg: #ededf4;
-	--fg-dim: #9a95ad;
-	--fg-faint: #625d75;
+	--bg: #0a0a0b;
+	--bg-panel: #121214;
+	--bg-panel-2: #17171a;
+	--line: #26262b;
+	--line-bright: #3a3a42;
+	--fg: #ececee;
+	--fg-dim: #9a9aa2;
+	--fg-faint: #64646d;
 
-	--purple: #bb6bde;
-	--teal: #3ecdc2;
-	--blue: #6cd4f0;
-	--pink: #ff5c8a;
-	--orange: #ff8952;
+	/* Two accents only: one structural (headings, labels, data),
+	   one for links. Everything else earns emphasis through weight,
+	   size and letterspacing rather than another hue. */
+	--accent: #3ecdc2;
+	--link: #ff5c8a;
+	--link-quiet: rgba(255, 92, 138, 0.35);
 
 	--serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
 	--mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 
 	--content-w: 780px;
-	--radius: 6px;
+
+	/* The mono is one typeface set one way — sentence case, no tracking,
+	   three sizes. Every label reads like the tagline does. */
+	--mono-sm: 0.78rem;      /* quiet labels: captions, tags, meta */
+	--mono-base: 0.86rem;    /* the default: tagline, nav, headings, data */
+	--mono-lg: 1.1rem;       /* the numbers worth reading first */
 }
 
 * { box-sizing: border-box; }
@@ -68,9 +75,6 @@ html { scroll-behavior: smooth; }
 
 body {
 	background: var(--bg);
-	background-image:
-		radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
-	background-size: 28px 28px;
 	color: var(--fg);
 	font-family: var(--serif), sans-serif;
 	font-size: 17px;
@@ -85,7 +89,7 @@ main {
 	margin: 0 auto;
 }
 
-::selection { background: var(--purple); color: #08070d; }
+::selection { background: var(--accent); color: var(--bg); }
 
 /* ---------------- Typography ---------------- */
 
@@ -99,30 +103,30 @@ h1 {
 }
 
 h2 {
-	color: var(--teal);
+	color: var(--accent);
 	font-size: 1.3rem;
 	text-align: left;
-	margin: 2.75rem 0 1rem;
+	margin: 2.5rem 0 1rem;
 	padding-bottom: 0.4rem;
 	border-bottom: 1px solid var(--line);
 }
 
 h3 {
-	color: var(--blue);
-	font-size: 1.05rem;
+	color: var(--accent);
+	font-size: 1.1rem;
 	text-align: left;
-	margin: 1.75rem 0 0.75rem;
+	margin: 2rem 0 0.85rem;
 }
 
 p { color: var(--fg); }
 
 a {
-	color: var(--pink);
+	color: var(--link);
 	text-decoration: none;
-	border-bottom: 1px solid rgba(255, 92, 138, 0.35);
+	border-bottom: 1px solid var(--link-quiet);
 	transition: border-color .15s ease, color .15s ease;
 }
-a:hover { border-color: var(--pink); }
+a:hover { border-color: var(--link); }
 
 .icon {
 	height: 0.85em;
@@ -137,52 +141,46 @@ code, .mono {
 }
 
 code {
-	color: var(--orange);
+	color: var(--accent);
 	background: var(--bg-panel);
 	padding: 0.1em 0.35em;
-	border-radius: 4px;
 	overflow-wrap: break-word;
 }
 
 /* ---------------- Header / nav ---------------- */
 
 .site-header {
-	padding: 2.75rem 0 1.5rem;
+	padding: 3rem 0 0;
 }
 
 .tagline {
 	font-family: var(--mono);
 	color: var(--fg-dim);
-	font-size: 0.92rem;
-	margin: 0.5rem 0 0;
+	font-size: var(--mono-base);
+	margin: 0.6rem 0 0;
 }
-.tagline .prompt { color: var(--teal); }
-.tagline .cursor {
-	display: inline-block;
-	width: 0.55em;
-	background: var(--fg-dim);
-	margin-left: 2px;
-	animation: blink 1.1s steps(1) infinite;
-}
-@keyframes blink { 50% { opacity: 0; } }
 
-nav.crumbs {
-	font-family: var(--mono);
-	font-size: 0.9rem;
-	color: var(--fg-faint);
-	margin-top: 1.1rem;
+nav.site-nav {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.15rem 0;
+	gap: 0 1.6rem;
+	margin-top: 1.75rem;
+	padding-top: 0.8rem;
+	border-top: 1px solid var(--line);
+	font-family: var(--mono);
+	font-size: var(--mono-base);
 }
-nav.crumbs a {
-	color: var(--fg-dim);
-	border-bottom: none;
-	padding: 0.15rem 0;
+nav.site-nav a {
+	color: var(--fg-faint);
+	border-bottom: 1px solid transparent;
+	padding-bottom: 0.35rem;
+	margin-bottom: -1px;
 }
-nav.crumbs a:hover { color: var(--teal); }
-nav.crumbs a.current { color: var(--teal); }
-nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
+nav.site-nav a:hover { color: var(--fg-dim); }
+nav.site-nav a.current {
+	color: var(--accent);
+	border-bottom-color: var(--accent);
+}
 
 /* ---------------- Hero ---------------- */
 
@@ -190,7 +188,7 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 	display: flex;
 	gap: 2.25rem;
 	align-items: flex-start;
-	margin-top: 1.75rem;
+	margin-top: 2.25rem;
 	flex-wrap: wrap;
 }
 
@@ -198,10 +196,8 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 	flex: 0 0 auto;
 	width: 148px;
 	height: 148px;
-	border-radius: 50%;
 	object-fit: cover;
-	border: 2px solid var(--line-bright);
-	box-shadow: 0 0 0 6px var(--bg-panel);
+	border: 1px solid var(--line-bright);
 }
 
 .hero-text { flex: 1 1 320px; min-width: 260px; }
@@ -211,73 +207,54 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 .hero-links {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.6rem;
+	gap: 0.5rem;
 	margin-top: 1.1rem;
 }
 .hero-links a {
 	font-family: var(--mono);
-	font-size: 0.86rem;
+	font-size: var(--mono-sm);
 	color: var(--fg-dim);
 	border: 1px solid var(--line);
-	border-bottom: 1px solid var(--line);
-	border-radius: 999px;
-	padding: 0.32rem 0.85rem;
+	padding: 0.35rem 0.8rem;
 }
-.hero-links a:hover { color: var(--teal); border-color: var(--teal); }
+.hero-links a:hover { color: var(--accent); border-color: var(--accent); }
 
-/* ---------------- Terminal panel (globe/clock widget) ---------------- */
+/* ---------------- Locale band (globe + clocks) ----------------
+   Deliberately unframed: a box here read as a widget bolted onto the
+   page. Two hairlines and whitespace do the separating instead. */
 
-.term-panel {
-	background: var(--bg-panel);
-	border: 1px solid var(--line);
-	border-radius: var(--radius);
-	overflow: hidden;
-	margin-top: 1.5rem;
-	box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-}
-
-.term-titlebar {
+.locale {
 	display: flex;
-	align-items: center;
-	gap: 0.4rem;
-	padding: 0.4rem 0.7rem;
-	background: var(--bg-panel-2);
-	border-bottom: 1px solid var(--line);
-	font-family: var(--mono);
-	font-size: 0.72rem;
-	color: var(--fg-faint);
-}
-.term-dot {
-	width: 8px; height: 8px; border-radius: 50%;
-	background: var(--line-bright);
-}
-.term-dot:nth-child(1) { background: #ff5f57; }
-.term-dot:nth-child(2) { background: #febc2e; }
-.term-dot:nth-child(3) { background: #28c840; }
-.term-title { margin-left: 0.5rem; }
-.term-credit {
-	margin-left: auto;
-	color: var(--fg-faint);
-	border-bottom: none;
-	font-size: 0.7rem;
-}
-.term-credit:hover { color: var(--teal); }
-
-.term-body {
-	padding: 0.65rem 1rem 0.8rem;
-	display: flex;
-	gap: 1.25rem;
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
+	gap: 2.5rem;
+	position: relative;
+	margin: 3rem 0 0;
+	padding: 2rem 0;
+	border-top: 1px solid var(--line);
+	border-bottom: 1px solid var(--line);
 }
+
+.locale-credit {
+	position: absolute;
+	right: 0;
+	bottom: 0.55rem;
+	font-family: var(--mono);
+	font-size: var(--mono-sm);
+	color: var(--fg-faint);
+	border-bottom: none;
+}
+.locale-credit:hover { color: var(--accent); }
+
+/* ---------------- Globe + clocks ---------------- */
 
 #globe {
 	font-family: var(--mono);
 	font-size: 9px;
 	line-height: 9px;
 	letter-spacing: 1px;
-	color: var(--teal);
+	color: var(--accent);
 	white-space: pre;
 	margin: 0;
 	text-align: center;
@@ -285,25 +262,23 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 
 .clocks {
 	font-family: var(--mono);
-	font-size: 0.82rem;
+	font-size: var(--mono-sm);
 	color: var(--fg-dim);
 	display: grid;
-	gap: 0.6rem;
-	min-width: 210px;
+	gap: 1rem;
+	min-width: 190px;
 }
 .clock-row .clock-label {
 	color: var(--fg-faint);
-	font-size: 0.72rem;
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
+	font-size: var(--mono-sm);
 }
 .clock-row .clock-time {
-	color: var(--fg);
-	font-size: 1.15rem;
-	margin-top: 0.1rem;
+	font-size: var(--mono-lg);
+	margin-top: 0.15rem;
+	font-variant-numeric: tabular-nums;
 }
-.clock-row.you .clock-time { color: var(--blue); }
-.clock-row.linus .clock-time { color: var(--teal); }
+.clock-row.you .clock-time { color: var(--fg); }
+.clock-row.linus .clock-time { color: var(--accent); }
 .clock-row .clock-place { color: var(--fg-faint); }
 
 @media (max-width: 480px) {
@@ -315,7 +290,7 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 .card-grid {
 	display: grid;
 	grid-template-columns: 1fr;
-	gap: 1.1rem;
+	gap: 1rem;
 }
 
 .card {
@@ -324,17 +299,20 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 	gap: 1.1rem;
 	background: var(--bg-panel);
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
 	padding: 1rem;
-	transition: border-color .15s ease, transform .15s ease;
+	transition: border-color .15s ease, box-shadow .15s ease;
 }
-.card:hover { border-color: var(--line-bright); transform: translateY(-2px); }
+/* An inset rule rather than a lift: no layout shift, and it reads as a
+   margin mark next to the entry instead of a floating tile. */
+.card:hover {
+	border-color: var(--line-bright);
+	box-shadow: inset 2px 0 0 var(--accent);
+}
 
 .card-thumb {
 	width: 100%;
 	aspect-ratio: 16 / 10;
 	object-fit: cover;
-	border-radius: 4px;
 	border: 1px solid var(--line);
 	cursor: zoom-in;
 	background: var(--bg-panel-2);
@@ -342,26 +320,25 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 
 .card-body h3 { margin: 0 0 0.4rem; }
 .card-body h3 a { border-bottom: none; color: inherit; }
-.card-body h3 a:hover { color: var(--blue); }
+.card-body h3 a:hover { color: var(--accent); }
 .card-body p { margin: 0 0 0.6rem; color: var(--fg-dim); font-size: 0.95rem; }
 
 .tags {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.4rem;
-	margin-top: 0.5rem;
+	gap: 0.35rem;
+	margin-top: 0.6rem;
 }
 .tag {
 	font-family: var(--mono);
-	font-size: 0.72rem;
+	font-size: var(--mono-sm);
 	color: var(--fg-faint);
 	border: 1px solid var(--line);
-	border-radius: 999px;
-	padding: 0.15rem 0.6rem;
+	padding: 0.12rem 0.5rem;
 }
 
-.card-links { margin-top: 0.65rem; display: flex; gap: 0.9rem; }
-.card-links a { font-family: var(--mono); font-size: 0.82rem; }
+.card-links { margin-top: 0.7rem; display: flex; gap: 0.9rem; }
+.card-links a { font-family: var(--mono); font-size: var(--mono-sm); }
 
 .card--text { grid-template-columns: 1fr; }
 
@@ -374,7 +351,7 @@ nav.crumbs .sep { margin: 0 0.6rem; color: var(--line-bright); }
 dl.simple-list dt {
 	font-weight: bold;
 	color: var(--fg);
-	margin-top: 1.1rem;
+	margin-top: 1.4rem;
 }
 dl.simple-list dt a { color: inherit; }
 dl.simple-list dd {
@@ -393,7 +370,7 @@ dl.simple-list dt:first-child { margin-top: 0; }
 	align-items: center;
 	justify-content: center;
 	padding: 3rem 1.5rem;
-	background: rgba(4, 3, 8, 0.88);
+	background: rgba(6, 6, 7, 0.9);
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity .15s ease;
@@ -404,7 +381,6 @@ dl.simple-list dt:first-child { margin-top: 0; }
 	max-width: min(92vw, 1150px);
 	max-height: 88vh;
 	border: 1px solid var(--line-bright);
-	border-radius: 4px;
 	box-shadow: 0 25px 70px rgba(0,0,0,0.6);
 }
 .lightbox-close {
@@ -413,10 +389,9 @@ dl.simple-list dt:first-child { margin-top: 0; }
 	right: 1.5rem;
 	font-family: var(--mono);
 	color: var(--fg-dim);
-	font-size: 0.85rem;
+	font-size: var(--mono-sm);
 	border: 1px solid var(--line-bright);
-	border-radius: 999px;
-	padding: 0.3rem 0.8rem;
+	padding: 0.35rem 0.8rem;
 	background: var(--bg-panel);
 }
 
@@ -429,16 +404,15 @@ footer {
 	border-top: 1px solid var(--line);
 	text-align: center;
 	font-family: var(--mono);
-	font-size: 0.82rem;
+	font-size: var(--mono-sm);
 	color: var(--fg-faint);
 }
 footer a { color: var(--fg-faint); border-bottom: none; }
-footer a:hover { color: var(--teal); }
+footer a:hover { color: var(--accent); }
 
 /* ---------------- Motion sensitivity ---------------- */
 
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
-	.tagline .cursor { animation: none; }
 	.card { transition: none; }
 }

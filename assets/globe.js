@@ -195,7 +195,7 @@
 	var linusTime = document.getElementById("clock-linus-time");
 
 	var youTz = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-	var youCity = youTz.split("/").pop().replace(/_/g, " ").toUpperCase();
+	var youCity = youTz.split("/").pop().replace(/_/g, " ");
 	if (youPlace) youPlace.textContent = youCity;
 
 	function fmt(tz) {

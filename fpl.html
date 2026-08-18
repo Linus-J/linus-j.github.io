@@ -4,12 +4,11 @@
 <meta charset="utf-8">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>FPL Status — Linus Jeary</title>
-<meta name="description" content="Live status of Linus Jeary's Fantasy Premier League manager bot: current squad, top xPts projections, and transfer/chip history.">
+<meta name="description" content="Live status of Linus Jeary's Fantasy Premier League decision engine: current squad, top xPts projections, and transfer/chip history.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
 <meta name="color-scheme" content="dark">
 <link rel="stylesheet" type="text/css" href="assets/style.css">
-<link rel="stylesheet" type="text/css" href="assets/charts/uplot.min.css">
 <link rel="stylesheet" type="text/css" href="assets/stats-panel.css">
 <link rel="stylesheet" type="text/css" href="assets/panels/fpl.css">
 <link rel="icon" href="favicon.png">
@@ -19,15 +18,15 @@
 
 <header class="site-header">
 	<h1>FPL Status</h1>
-	<p class="tagline"><span class="prompt">$</span> fpl status<br>Live squad, xPts projections, and decision history from the FPL bot<span class="cursor"></span></p>
-	<nav class="crumbs">
-		<a href="/">~/home</a><span class="sep">/</span><a href="system">~/system</a><span class="sep">/</span><a href="fpl" class="current">~/fpl</a><span class="sep">/</span><a href="contact">~/contact</a>
+	<p class="tagline">Live squad, xPts projections and decision history from the engine</p>
+	<nav class="site-nav">
+		<a href="/">Home</a><a href="system">System</a><a href="fpl" class="current">FPL</a><a href="contact">Contact</a>
 	</nav>
 </header>
 
 <article>
 
-<p>A live view of the <a href="https://github.com/Linus-J/FPL-26-27-bot">FPL 26/27 Manager Bot</a>'s current squad, Monte Carlo xPts projections, and transfer/chip history — sourced directly from the bot's own data exports, updated after each gameweek's decision.</p>
+<p>A live view of the <a href="https://github.com/Linus-J/FPL-decision-engine">FPL 26/27 Decision Engine</a>'s current squad, Monte Carlo xPts projections, and transfer/chip history — sourced directly from the engine's own data exports, updated after each gameweek's decision.</p>
 
 <div class="stats-panel" id="fpl-panel">
 	<div class="stats-panel-header">
@@ -38,7 +37,7 @@
 
 <noscript>
 	<p>This page needs JavaScript to show live data. You can view the raw exported data directly on
-	<a href="https://github.com/Linus-J/FPL-26-27-bot/tree/v2/data/simulations">GitHub</a> instead.</p>
+	<a href="https://github.com/Linus-J/FPL-decision-engine/tree/v2/data/simulations">GitHub</a> instead.</p>
 </noscript>
 
 </article>
@@ -48,7 +47,6 @@
 	<a href="https://linus-j.com/">linus-j.com</a> &middot; 2026
 </footer>
 
-<script src="assets/charts/uplot.iife.min.js"></script>
 <script src="assets/charts/distribution.js"></script>
 <script src="assets/charts/timeline.js"></script>
 <script src="assets/stats-panel.js"></script>

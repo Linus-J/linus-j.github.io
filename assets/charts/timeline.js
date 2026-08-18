@@ -1,8 +1,7 @@
 /* Generic vertical event-log timeline: reverse-chronological entries with
-   a connecting rail and a colored dot per event type. */
+   a connecting rail and a marker per event type. */
 
 var Timeline = (function () {
-	var EVENT_COLORS = { transfers: "var(--teal)", chip: "var(--orange)" };
 
 	function describeEvent(event) {
 		if (event.type === "transfers") {
@@ -42,8 +41,9 @@ var Timeline = (function () {
 			var rail = document.createElement("div");
 			rail.className = "timeline-rail";
 			var dot = document.createElement("span");
-			dot.className = "timeline-dot";
-			dot.style.background = EVENT_COLORS[event.type] || "var(--fg-faint)";
+			// Chips are the rare, deliberate events — hollow marker so they
+			// read as different from routine transfers without a second hue.
+			dot.className = event.type === "chip" ? "timeline-dot timeline-dot--chip" : "timeline-dot";
 			rail.appendChild(dot);
 
 			var text = document.createElement("div");

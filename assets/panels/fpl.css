@@ -1,63 +1,105 @@
 /* ---------------- FPL panel: squad/top15/history layout ---------------- */
 
+.fpl-key {
+	font-family: var(--mono);
+	font-size: var(--mono-sm);
+	color: var(--fg-faint);
+	margin: 0 0 1rem;
+	line-height: 1.5;
+}
+
 .fpl-position-label {
 	font-family: var(--mono);
-	font-size: 0.72rem;
-	color: var(--teal);
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	margin: 1.1rem 0 0.5rem;
+	font-size: var(--mono-sm);
+	color: var(--accent);
+	margin: 1.25rem 0 0.5rem;
 	border: none;
 	padding: 0;
 }
 .fpl-position-label--bench { color: var(--fg-faint); }
-.fpl-squad h3:first-child { margin-top: 0; }
+.fpl-squad .fpl-key + .fpl-position-label { margin-top: 0; }
 
-.fpl-position-list { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+/* A shared column track across every position row, so cards line up
+   section to section instead of stretching to fill whatever's left. */
+.fpl-position-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 0.5rem;
+}
 
 .fpl-card {
 	background: var(--bg-panel-2);
 	border: 1px solid var(--line);
-	border-radius: 4px;
-	padding: 0.5rem 0.65rem;
-	min-width: 108px;
-	flex: 1 1 108px;
+	padding: 0.55rem 0.7rem;
+	min-width: 0;
 	transition: border-color 0.15s ease;
 }
-.fpl-card--captain { border-color: var(--orange); }
-
-.fpl-card-top {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 0.5rem;
-	font-family: var(--mono);
-	font-size: 0.74rem;
+/* Captain gets a rule down the edge rather than a second accent colour;
+   the name already carries the "(C)". */
+.fpl-card--captain {
+	border-color: var(--line-bright);
+	box-shadow: inset 2px 0 0 var(--accent);
 }
-.fpl-card-name { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.fpl-card-meta { color: var(--fg-faint); flex-shrink: 0; }
 
-.fpl-card-whisker { margin: 0.35rem 0; }
-
-.fpl-card-value {
+/* Name gets the full card width — squad names run long enough
+   ("Alexander-Arnold") that sharing a line with the meta clipped them. */
+.fpl-card-name {
 	font-family: var(--mono);
-	font-size: 0.78rem;
-	color: var(--teal);
+	font-size: var(--mono-base);
+	color: var(--fg);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.fpl-card-meta {
+	font-family: var(--mono);
+	font-size: var(--mono-sm);
+	color: var(--fg-faint);
+	margin-top: 0.1rem;
+	white-space: nowrap;
+}
+
+.fpl-card-figure {
+	display: flex;
+	align-items: baseline;
+	gap: 0.3rem;
+	margin-top: 0.5rem;
+	font-family: var(--mono);
+}
+.fpl-card-mean {
+	color: var(--accent);
+	font-size: var(--mono-lg);
+	font-variant-numeric: tabular-nums;
+	line-height: 1;
+}
+.fpl-card-unit {
+	color: var(--fg-faint);
+	font-size: var(--mono-sm);
+}
+.fpl-card-range {
+	margin-left: auto;
+	color: var(--fg-faint);
+	font-size: var(--mono-sm);
+	font-variant-numeric: tabular-nums;
 }
 
 .fpl-section-heading {
 	font-family: var(--mono);
-	font-size: 0.85rem;
-	color: var(--blue);
-	margin: 1.75rem 0 0.75rem;
+	font-size: var(--mono-base);
+	color: var(--fg-dim);
+	margin: 0 0 0.5rem;
 	border: none;
 	padding: 0;
 }
-.fpl-top15 { margin-top: 1.75rem; }
-.fpl-history { margin-top: 1.75rem; }
+.fpl-top15,
+.fpl-history {
+	margin-top: 2rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--line);
+}
 
-@media (max-width: 560px) {
-	.fpl-card { flex: 1 1 45%; }
+@media (max-width: 460px) {
+	.fpl-position-list { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
 
 /* ---------------- Switch-run transition ---------------- */
@@ -82,7 +124,7 @@
 
 .fpl-card--changed { animation: fpl-card-pulse 0.7s ease; }
 @keyframes fpl-card-pulse {
-	0% { border-color: var(--blue); }
+	0% { border-color: var(--accent); }
 	100% { border-color: var(--line); }
 }
 

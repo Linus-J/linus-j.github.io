@@ -12,6 +12,20 @@ var FplPanel = (function () {
 		return node;
 	}
 
+	function sectionHeading(text) {
+		var heading = el("h3", "fpl-section-heading");
+		heading.textContent = text;
+		return heading;
+	}
+
+	/* One line of plain English under a heading, so no graphic on the page
+	   has to be guessed at. */
+	function key(text) {
+		var node = el("p", "fpl-key");
+		node.textContent = text;
+		return node;
+	}
+
 	function buildPlayerCard(player, prevIds, prevXpts) {
 		var card = el("div", "fpl-card");
 		card.dataset.playerId = player.player_id;
@@ -23,28 +37,40 @@ var FplPanel = (function () {
 			if (prevMean !== newMean) card.classList.add("fpl-card--changed");
 		}
 
-		var top = el("div", "fpl-card-top");
-		var name = el("span", "fpl-card-name");
+		var name = el("div", "fpl-card-name");
 		name.textContent = player.is_captain ? player.web_name + " (C)" : player.web_name;
-		var meta = el("span", "fpl-card-meta");
-		meta.textContent = player.position + " · £" + player.now_cost.toFixed(1);
-		top.appendChild(name);
-		top.appendChild(meta);
+		name.title = player.web_name;
+		var meta = el("div", "fpl-card-meta");
+		meta.textContent = player.position + " \u00b7 \u00a3" + player.now_cost.toFixed(1);
 
-		var whisker = el("div", "fpl-card-whisker");
-		Distribution.renderWhisker(whisker, player.xpts);
+		// The projection reads as plain labelled numbers: the mean, then the
+		// interval it falls in. The key above the squad says what both are.
+		var figure = el("div", "fpl-card-figure");
+		var mean = el("span", "fpl-card-mean");
+		mean.textContent = player.xpts ? player.xpts.mean.toFixed(1) : "\u2014";
+		var unit = el("span", "fpl-card-unit");
+		unit.textContent = "xPts";
+		figure.appendChild(mean);
+		figure.appendChild(unit);
 
-		var value = el("span", "fpl-card-value");
-		value.textContent = player.xpts ? player.xpts.mean.toFixed(1) : "—";
+		var range = Distribution.formatRange(player.xpts);
+		if (range != null) {
+			var rangeEl = el("span", "fpl-card-range");
+			rangeEl.textContent = range;
+			figure.appendChild(rangeEl);
+		}
 
-		card.appendChild(top);
-		card.appendChild(whisker);
-		card.appendChild(value);
+		card.title = Distribution.describe(player);
+
+		card.appendChild(name);
+		card.appendChild(meta);
+		card.appendChild(figure);
 		return card;
 	}
 
 	function buildSquadSection(squad, prevIds, prevXpts) {
 		var section = el("section", "fpl-squad");
+		section.appendChild(key("xPts = mean projected points \u00b7 range = " + Distribution.describeBasis(Distribution.basisOf(squad))));
 		var starters = squad.filter(function (p) { return p.is_starting; });
 		var bench = squad
 			.filter(function (p) { return !p.is_starting; })
@@ -75,21 +101,20 @@ var FplPanel = (function () {
 
 	function buildTop15Section(top15) {
 		var section = el("section", "fpl-top15");
-		var heading = el("h3", "fpl-section-heading");
-		heading.textContent = "Top 15 by xPts";
 		var chart = el("div", "fpl-top15-chart");
-		section.appendChild(heading);
+		var hasSpread = Distribution.renderRanked(chart, top15);
+		section.appendChild(sectionHeading("Top 15 by xPts"));
+		section.appendChild(key(hasSpread
+			? "bar = mean xPts \u00b7 strip = " + Distribution.describeBasis(Distribution.basisOf(top15))
+			: "bar = mean xPts"));
 		section.appendChild(chart);
-		Distribution.renderTop15Chart(chart, top15);
 		return section;
 	}
 
 	function buildHistorySection(history) {
 		var section = el("section", "fpl-history");
-		var heading = el("h3", "fpl-section-heading");
-		heading.textContent = "History";
+		section.appendChild(sectionHeading("History"));
 		var timeline = el("div", "fpl-timeline");
-		section.appendChild(heading);
 		section.appendChild(timeline);
 		Timeline.render(timeline, history);
 		return section;
@@ -140,13 +165,13 @@ var FplPanel = (function () {
 	}
 
 	return {
-		repo: "Linus-J/FPL-26-27-bot",
+		repo: "Linus-J/FPL-decision-engine",
 		// jsDelivr's GitHub proxy treats a bare "v2" as a semver-style tag
 		// lookup (matches its vN tag convention), which 404s since v2 is a
 		// branch, not a tag. The fully-qualified ref bypasses that.
 		ref: "refs/heads/v2",
 		path: "data/simulations",
-		fallbackUrl: "https://github.com/Linus-J/FPL-26-27-bot/tree/v2/data/simulations",
+		fallbackUrl: "https://github.com/Linus-J/FPL-decision-engine/tree/v2/data/simulations",
 		renderRun: renderRun,
 	};
 })();

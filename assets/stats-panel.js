@@ -16,16 +16,30 @@ var StatsPanel = (function () {
 		});
 	}
 
+	/* Exact equality is deliberate: schema_version is a major version, so a
+	   change to it means fields this page already reads have changed meaning
+	   and rendering them anyway would be worse than not rendering. Purely
+	   additive keys must not bump it. The mismatch is tagged so the failure
+	   reads as "the page is stale", not "the network is down" — otherwise a
+	   future bump looks identical to an outage. */
 	function fetchSupportedJson(url) {
 		return fetchJson(url).then(function (data) {
 			if (data.schema_version !== SUPPORTED_SCHEMA_VERSION) {
-				throw new Error(
+				var err = new Error(
 					"unsupported schema_version " + data.schema_version + " at " + url +
 					" (expected " + SUPPORTED_SCHEMA_VERSION + ")"
 				);
+				err.schemaMismatch = true;
+				throw err;
 			}
 			return data;
 		});
+	}
+
+	function failureText(err) {
+		return err && err.schemaMismatch
+			? "This page is out of date with the data it's reading."
+			: "Couldn't load live data.";
 	}
 
 	function el(tag, className) {
@@ -72,9 +86,9 @@ var StatsPanel = (function () {
 		var ref = panel.ref || "main";
 
 		return fetchSupportedJson(jsDelivrUrl(panel.repo, ref, panel.path, "index.json"))
-			.catch(function () {
+			.catch(function (err) {
 				root.setAttribute("data-state", "error");
-				renderMessage(body, "Couldn't load live data.", panel.fallbackUrl, "View the source repo instead →");
+				renderMessage(body, failureText(err), panel.fallbackUrl, "View the source repo instead →");
 				return null;
 			})
 			.then(function (index) {
@@ -97,9 +111,9 @@ var StatsPanel = (function () {
 							panel.renderRun(body, run, currentRun);
 							currentRun = run;
 						})
-						.catch(function () {
+						.catch(function (err) {
 							root.setAttribute("data-state", "error");
-							renderMessage(body, "Couldn't load that run.", panel.fallbackUrl, "View the source repo instead →");
+							renderMessage(body, failureText(err), panel.fallbackUrl, "View the source repo instead →");
 						});
 				}
 
