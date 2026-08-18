@@ -26,10 +26,17 @@ var FplPanel = (function () {
 		return node;
 	}
 
+	function armband(player) {
+		if (player.is_captain) return { suffix: " (C)", cls: "fpl-card--captain", label: "captain" };
+		if (player.is_vice_captain) return { suffix: " (V)", cls: "fpl-card--vice", label: "vice-captain" };
+		return null;
+	}
+
 	function buildPlayerCard(player, prevIds, prevXpts) {
 		var card = el("div", "fpl-card");
 		card.dataset.playerId = player.player_id;
-		if (player.is_captain) card.classList.add("fpl-card--captain");
+		var role = armband(player);
+		if (role) card.classList.add(role.cls);
 		if (prevIds && !prevIds.has(player.player_id)) card.classList.add("fpl-card--new");
 		if (prevXpts && player.player_id in prevXpts) {
 			var prevMean = prevXpts[player.player_id];
@@ -38,8 +45,7 @@ var FplPanel = (function () {
 		}
 
 		var name = el("div", "fpl-card-name");
-		name.textContent = player.is_captain ? player.web_name + " (C)" : player.web_name;
-		name.title = player.web_name;
+		name.textContent = role ? player.web_name + role.suffix : player.web_name;
 		var meta = el("div", "fpl-card-meta");
 		meta.textContent = player.position + " \u00b7 \u00a3" + player.now_cost.toFixed(1);
 
@@ -60,7 +66,9 @@ var FplPanel = (function () {
 			figure.appendChild(rangeEl);
 		}
 
-		card.title = Distribution.describe(player);
+		// The card's own title carries the full name, so a name clipped by
+		// the ellipsis is still readable on hover.
+		card.title = Distribution.describe(player) + (role ? " \u00b7 " + role.label : "");
 
 		card.appendChild(name);
 		card.appendChild(meta);

@@ -54,6 +54,7 @@
 	   one for links. Everything else earns emphasis through weight,
 	   size and letterspacing rather than another hue. */
 	--accent: #3ecdc2;
+	--accent-quiet: rgba(62, 205, 194, 0.35);
 	--link: #ff5c8a;
 	--link-quiet: rgba(255, 92, 138, 0.35);
 

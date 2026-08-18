@@ -34,11 +34,16 @@
 	min-width: 0;
 	transition: border-color 0.15s ease;
 }
-/* Captain gets a rule down the edge rather than a second accent colour;
-   the name already carries the "(C)". */
+/* Armbands get a rule down the edge rather than a second accent colour;
+   the name already carries the "(C)"/"(V)". Vice-captain sits in the same
+   channel one step down in weight, so the two read as ranked rather than
+   as different kinds of thing. */
 .fpl-card--captain {
 	border-color: var(--line-bright);
 	box-shadow: inset 2px 0 0 var(--accent);
+}
+.fpl-card--vice {
+	box-shadow: inset 2px 0 0 var(--accent-quiet);
 }
 
 /* Name gets the full card width — squad names run long enough
