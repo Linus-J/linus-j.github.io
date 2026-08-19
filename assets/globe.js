@@ -1,31 +1,56 @@
-/* Dependency-free ASCII globe + dual clock widget.
-   Renders with the same technique behind terminal globe spinners
-   like adamsky/globe: analytic ray-sphere intersection per
-   character cell, sampling a real equirectangular world bitmap
-   (below) rather than a sparse point cloud or a hand-drawn
-   landmask — this is what makes continents read correctly.
-   World outline rasterised from Natural Earth's 1:110m land
-   polygons (public domain, naturalearthdata.com) — an original
-   render of public-domain vector data, not copied from any
-   GPL-licensed texture asset. */
+/* Dependency-free ASCII globe, clocks and solar readout.
+
+   Provenance — the page carries no visible credit, so this comment is
+   where it lives. Keep it with the file.
+
+   Technique: analytic ray-sphere intersection per character cell,
+   sampling a real equirectangular world bitmap (below) rather than a
+   sparse point cloud or a hand-drawn landmask — this is what makes
+   continents read correctly. That approach follows terminal globe
+   spinners such as adamsky/globe (https://github.com/adamsky/globe,
+   GPL). No code or assets from it are used here: this is an independent
+   JavaScript implementation, and it has since diverged — the sphere is
+   lit from the real subsolar point, so the terminator tracks actual day
+   and night rather than a fixed decorative light.
+
+   World data: outline rasterised from Natural Earth's 1:110m land
+   polygons (public domain, naturalearthdata.com). An original render of
+   public-domain vector data, not a copy of any GPL-licensed texture
+   asset. Natural Earth is the attribution that the globe's own tooltip
+   names, since it is the one thing here actually derived from someone
+   else's work. */
 (function () {
 	"use strict";
 
 	var pre = document.getElementById("globe");
 	if (!pre) return;
 
-	var COLS = 62, ROWS = 33;
 	var RADIUS_X = 18;
 	var RADIUS_Y = RADIUS_X * 0.72; // compensate for monospace cell aspect ratio
-	var LIGHT = normalize([0.5, 0.45, 1]);
+
+	// Size the character grid to the sphere rather than fixing it: a cell
+	// further from the centre than the radius fails the d2 > 1 test on every
+	// frame, so anything beyond these extents is guaranteed blank padding.
+	// The old fixed 62x33 grid left four dead rows above and below the globe
+	// and thirteen dead columns either side, which the surrounding layout
+	// then had to absorb as phantom whitespace.
+	var COLS = Math.ceil(RADIUS_X * 2);
+	var ROWS = Math.ceil(RADIUS_Y * 2);
+	var DEG = Math.PI / 180;
+	var SOLAR_DEG_PER_HOUR = 15; // the sun's hour angle, i.e. mean solar time
+	var LONDON = { lat: 51.5074 * DEG, lon: -0.1278 * DEG };
+	var HORIZON = -0.833 * DEG; // refraction plus the sun's apparent radius
 	var TILT = -0.55; // tilt the pole axis toward the viewer — a flat equatorial view hides most landmass
 
 	// Land and ocean use separate ramps so continents stay visually
 	// denser than ocean at every lighting level instead of blending
-	// into a shared brightness gradient.
+	// into a shared brightness gradient. Neither ramp bottoms out at a
+	// space: lighting is now the real day/night terminator, so a blank
+	// darkest level would erase the night hemisphere and leave a crescent
+	// rather than a globe.
 	var RAMP = {
-		".": [" ", ".", ":"], // ocean
-		"@": ["+", "*", "#", "@"], // land
+		".": [".", ":"], // ocean — night, day
+		"@": ["*", "#", "@"], // land — night, terminator, day
 	};
 
 	var TEX = [
@@ -112,12 +137,60 @@
 	var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 	var spin = 2.4; // starting longitude chosen so Africa/Europe face forward at rest
 
-	function normalize(v) {
-		var m = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-		return [v[0] / m, v[1] / m, v[2] / m];
+	// ---------------- Solar position ----------------
+	// Low-precision formulae from the Astronomical Almanac: the subsolar
+	// point is where the sun is directly overhead, so lighting the sphere
+	// from it makes the lit half genuinely the half in daylight, and the
+	// terminator sweeps real continents as the globe spins.
+	function subsolar(date) {
+		var n = date.getTime() / 86400000 + 2440587.5 - 2451545.0; // days from J2000
+		var meanLon = ((280.460 + 0.9856474 * n) % 360) * DEG;
+		var meanAnom = ((357.528 + 0.9856003 * n) % 360) * DEG;
+		var eclLon = meanLon + (1.915 * Math.sin(meanAnom) + 0.020 * Math.sin(2 * meanAnom)) * DEG;
+		var obliq = (23.439 - 0.0000004 * n) * DEG;
+		var ra = Math.atan2(Math.cos(obliq) * Math.sin(eclLon), Math.cos(eclLon));
+		var gmst = ((280.46061837 + 360.98564736629 * n) % 360) * DEG;
+		var lon = ra - gmst;
+		return {
+			lat: Math.asin(Math.sin(obliq) * Math.sin(eclLon)),
+			lon: Math.atan2(Math.sin(lon), Math.cos(lon)), // wrap to [-pi, pi]
+		};
+	}
+
+	// Unit vector toward the sun, in the same planet-fixed frame the
+	// texture is sampled in (lat = asin(y), lon = atan2(z, x)).
+	function sunVector(date) {
+		var s = subsolar(date);
+		var c = Math.cos(s.lat);
+		return [c * Math.cos(s.lon), Math.sin(s.lat), c * Math.sin(s.lon)];
+	}
+
+	// Time at which the subsolar point crosses a given longitude. Iterated
+	// because the sun's own motion along the ecliptic makes the crossing
+	// rate slightly non-uniform.
+	function solarNoon(date, lon) {
+		var ms = date.getTime();
+		for (var i = 0; i < 3; i++) {
+			var diff = subsolar(new Date(ms)).lon - lon;
+			diff = Math.atan2(Math.sin(diff), Math.cos(diff));
+			ms += (diff / DEG) / SOLAR_DEG_PER_HOUR * 3600000;
+		}
+		return ms;
+	}
+
+	function daylight(date, place) {
+		var noon = solarNoon(date, place.lon);
+		var dec = subsolar(new Date(noon)).lat;
+		var cosH = (Math.sin(HORIZON) - Math.sin(place.lat) * Math.sin(dec)) /
+			(Math.cos(place.lat) * Math.cos(dec));
+		if (cosH >= 1) return { polar: "no sunrise" };
+		if (cosH <= -1) return { polar: "no sunset" };
+		var hours = (Math.acos(cosH) / DEG) / SOLAR_DEG_PER_HOUR;
+		return { rise: noon - hours * 3600000, set: noon + hours * 3600000, hours: hours * 2 };
 	}
 
 	var cosTilt = Math.cos(TILT), sinTilt = Math.sin(TILT);
+	var SUN = sunVector(new Date());
 
 	function render() {
 		var buf = [];
@@ -167,7 +240,7 @@
 				var ch = TEX[texRow][texCol];
 				var ramp = RAMP[ch] || RAMP["."];
 
-				var brightness = vx * LIGHT[0] + vy * LIGHT[1] + vz * LIGHT[2];
+				var brightness = px * SUN[0] + py * SUN[1] + pz * SUN[2];
 				var bucket = Math.round(((brightness + 1) / 2) * (ramp.length - 1));
 				if (bucket < 0) bucket = 0;
 				if (bucket >= ramp.length) bucket = ramp.length - 1;
@@ -206,9 +279,55 @@
 		}
 	}
 
+	// ---------------- Sun panel ----------------
+	var sunRise = document.getElementById("sun-rise");
+	var sunSet = document.getElementById("sun-set");
+	var sunLength = document.getElementById("sun-length");
+
+	function fmtClock(ms) {
+		return new Date(ms).toLocaleTimeString("en-GB", {
+			timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false,
+		});
+	}
+
+	function fmtDuration(hours) {
+		var whole = Math.floor(hours);
+		var mins = Math.round((hours - whole) * 60);
+		if (mins === 60) { whole += 1; mins = 0; }
+		return whole + "h " + (mins < 10 ? "0" : "") + mins + "m";
+	}
+
+	function tickSun(now) {
+		var d = daylight(now, LONDON);
+		if (d.polar) {
+			if (sunRise) sunRise.textContent = "—";
+			if (sunSet) sunSet.textContent = "—";
+			if (sunLength) sunLength.textContent = d.polar;
+			return;
+		}
+		if (sunRise) sunRise.textContent = fmtClock(d.rise);
+		if (sunSet) sunSet.textContent = fmtClock(d.set);
+		if (sunLength) sunLength.textContent = fmtDuration(d.hours);
+	}
+
+	var lastSunMinute = -1;
+
 	function tickClocks() {
+		var now = new Date();
 		if (youTime) youTime.textContent = fmt(youTz);
 		if (linusTime) linusTime.textContent = fmt("Europe/London");
+
+		// The sun barely moves second to second: recompute its position and
+		// the day's figures once a minute rather than on every clock tick.
+		var minute = now.getMinutes();
+		if (minute !== lastSunMinute) {
+			lastSunMinute = minute;
+			SUN = sunVector(now);
+			tickSun(now);
+			// Under reduced motion nothing else ever redraws, so the
+			// terminator would otherwise freeze at whatever it was on load.
+			if (reduceMotion) render();
+		}
 	}
 	tickClocks();
 	setInterval(tickClocks, 1000);

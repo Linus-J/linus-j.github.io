@@ -43,18 +43,30 @@
 </section>
 
 <section class="locale">
-	<pre id="globe" aria-hidden="true"></pre>
-	<div class="clocks">
-		<div class="clock-row linus">
-			<div class="clock-label">Linus &mdash; London</div>
-			<div class="clock-time" id="clock-linus-time">--:--:--</div>
+	<!-- Rendering technique and world-data provenance: see assets/globe.js -->
+	<pre id="globe" aria-hidden="true" title="Earth lit from the sun's current position &middot; coastlines from Natural Earth"></pre>
+	<div class="readout">
+		<div class="readout-row">
+			<span class="readout-label">Linus &mdash; London</span>
+			<span class="readout-value readout-value--live" id="clock-linus-time">--:--:--</span>
 		</div>
-		<div class="clock-row you">
-			<div class="clock-label">You &mdash; <span id="clock-you-place">&hellip;</span></div>
-			<div class="clock-time" id="clock-you-time">--:--:--</div>
+		<div class="readout-row">
+			<span class="readout-label">You &mdash; <span id="clock-you-place">&hellip;</span></span>
+			<span class="readout-value" id="clock-you-time">--:--:--</span>
+		</div>
+		<div class="readout-row readout-row--divide">
+			<span class="readout-label">Sunrise</span>
+			<span class="readout-value" id="sun-rise">--:--</span>
+		</div>
+		<div class="readout-row">
+			<span class="readout-label">Sunset</span>
+			<span class="readout-value" id="sun-set">--:--</span>
+		</div>
+		<div class="readout-row">
+			<span class="readout-label">Daylight</span>
+			<span class="readout-value" id="sun-length">--</span>
 		</div>
 	</div>
-	<a class="locale-credit" href="https://github.com/adamsky/globe">adamsky/globe</a>
 </section>
 
 <h2 id="projects">Selected Projects</h2>

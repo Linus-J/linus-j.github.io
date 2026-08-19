@@ -228,27 +228,23 @@ nav.site-nav a.current {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	justify-content: center;
-	gap: 2.5rem;
-	position: relative;
+	/* Globe flush left, readout flush right: the figures' right edge and
+	   the globe's left edge then line up with the band's own rules. */
+	justify-content: space-between;
+	gap: 2rem 3rem;
 	margin: 3rem 0 0;
 	padding: 2rem 0;
 	border-top: 1px solid var(--line);
 	border-bottom: 1px solid var(--line);
 }
 
-.locale-credit {
-	position: absolute;
-	right: 0;
-	bottom: 0.55rem;
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	color: var(--fg-faint);
-	border-bottom: none;
+/* Once the three columns wrap, space-between strands each row at a
+   different alignment — centre them instead so the stack reads evenly. */
+@media (max-width: 700px) {
+	.locale { justify-content: center; }
 }
-.locale-credit:hover { color: var(--accent); }
 
-/* ---------------- Globe + clocks ---------------- */
+/* ---------------- Globe + readout ---------------- */
 
 #globe {
 	font-family: var(--mono);
@@ -261,26 +257,43 @@ nav.site-nav a.current {
 	text-align: center;
 }
 
-.clocks {
+/* One table rather than two stacks: labels share a left edge, figures
+   share a right edge, and every row sits on a common baseline. The
+   previous columns held 2 and 3 rows, so nothing lined up with anything. */
+.readout {
+	flex: 1 1 300px;
+	max-width: 420px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
 	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	color: var(--fg-dim);
-	display: grid;
-	gap: 1rem;
-	min-width: 190px;
 }
-.clock-row .clock-label {
+
+.readout-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1.5rem;
+}
+/* Splits the live clocks from the day's fixed solar figures. */
+.readout-row--divide {
+	border-top: 1px solid var(--line);
+	padding-top: 0.9rem;
+	margin-top: 0.3rem;
+}
+
+.readout-label {
 	color: var(--fg-faint);
 	font-size: var(--mono-sm);
 }
-.clock-row .clock-time {
-	font-size: var(--mono-lg);
-	margin-top: 0.15rem;
+
+.readout-value {
+	color: var(--fg);
+	font-size: var(--mono-base);
 	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
 }
-.clock-row.you .clock-time { color: var(--fg); }
-.clock-row.linus .clock-time { color: var(--accent); }
-.clock-row .clock-place { color: var(--fg-faint); }
+.readout-value--live { color: var(--accent); }
 
 @media (max-width: 480px) {
 	#globe { font-size: 7px; line-height: 7px; }
