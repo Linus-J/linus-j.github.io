@@ -38,7 +38,7 @@
 	var ROWS = Math.ceil(RADIUS_Y * 2);
 	var DEG = Math.PI / 180;
 	var SOLAR_DEG_PER_HOUR = 15; // the sun's hour angle, i.e. mean solar time
-	var LONDON = { lat: 51.5074 * DEG, lon: -0.1278 * DEG };
+	var LONDON = { lat: 51.5074 * DEG, lon: -0.1278 * DEG }; // fallback when the visitor's timezone is unknown
 	var HORIZON = -0.833 * DEG; // refraction plus the sun's apparent radius
 	var TILT = -0.55; // tilt the pole axis toward the viewer — a flat equatorial view hides most landmass
 
@@ -279,15 +279,47 @@
 		}
 	}
 
+	// The sun figures below are the visitor's own, which means turning their
+	// timezone into a position. The tz database publishes a representative
+	// coordinate for every zone (zone.tab); this is that table, rounded to
+	// 0.1 degrees — about 11 km, which shifts sunrise by a few seconds. Zones
+	// are grouped by region so each prefix is stored once instead of once per
+	// city, and the retired aliases browsers still report (Asia/Calcutta,
+	// Europe/Kiev) carry their modern zone's coordinate.
+	var ZONE_COORDS = ";Africa|Abidjan,5.3,-4.0 Accra,5.5,-0.2 Addis_Ababa,9.0,38.7 Algiers,36.8,3.0 Asmara,15.3,38.9 Asmera,-1.3,36.8 Bamako,12.7,-8.0 Bangui,4.4,18.6 Banjul,13.5,-16.6 Bissau,11.8,-15.6 Blantyre,-15.8,35.0 Brazzaville,-4.3,15.3 Bujumbura,-3.4,29.4 Cairo,30.1,31.2 Casablanca,33.6,-7.6 Ceuta,35.9,-5.3 Conakry,9.5,-13.7 Dakar,14.7,-17.4 Dar_es_Salaam,-6.8,39.3 Djibouti,11.6,43.1 Douala,4.0,9.7 El_Aaiun,27.1,-13.2 Freetown,8.5,-13.2 Gaborone,-24.6,25.9 Harare,-17.8,31.1 Johannesburg,-26.2,28.0 Juba,4.8,31.6 Kampala,0.3,32.4 Khartoum,15.6,32.5 Kigali,-1.9,30.1 Kinshasa,-4.3,15.3 Lagos,6.5,3.4 Libreville,0.4,9.4 Lome,6.1,1.2 Luanda,-8.8,13.2 Lubumbashi,-11.7,27.5 Lusaka,-15.4,28.3 Malabo,3.8,8.8 Maputo,-26.0,32.6 Maseru,-29.5,27.5 Mbabane,-26.3,31.1 Mogadishu,2.1,45.4 Monrovia,6.3,-10.8 Nairobi,-1.3,36.8 Ndjamena,12.1,15.1 Niamey,13.5,2.1 Nouakchott,18.1,-15.9 Ouagadougou,12.4,-1.5 Porto-Novo,6.5,2.6 Sao_Tome,0.3,6.7 Timbuktu,5.3,-4.0 Tripoli,32.9,13.2 Tunis,36.8,10.2 Windhoek,-22.6,17.1;America|Adak,51.9,-176.7 Anchorage,61.2,-149.9 Anguilla,18.2,-63.1 Antigua,17.1,-61.8 Araguaina,-7.2,-48.2 Argentina/Buenos_Aires,-34.6,-58.5 Argentina/Catamarca,-28.5,-65.8 Argentina/ComodRivadavia,-28.5,-65.8 Argentina/Cordoba,-31.4,-64.2 Argentina/Jujuy,-24.2,-65.3 Argentina/La_Rioja,-29.4,-66.8 Argentina/Mendoza,-32.9,-68.8 Argentina/Rio_Gallegos,-51.6,-69.2 Argentina/Salta,-24.8,-65.4 Argentina/San_Juan,-31.5,-68.5 Argentina/San_Luis,-33.3,-66.3 Argentina/Tucuman,-26.8,-65.2 Argentina/Ushuaia,-54.8,-68.3 Aruba,12.5,-70.0 Asuncion,-25.3,-57.7 Atikokan,48.8,-91.6 Atka,51.9,-176.7 Bahia,-13.0,-38.5 Bahia_Banderas,20.8,-105.2 Barbados,13.1,-59.6 Belem,-1.4,-48.5 Belize,17.5,-88.2 Blanc-Sablon,51.4,-57.1 Boa_Vista,2.8,-60.7 Bogota,4.6,-74.1 Boise,43.6,-116.2 Buenos_Aires,-34.6,-58.5 Cambridge_Bay,69.1,-105.1 Campo_Grande,-20.4,-54.6 Cancun,21.1,-86.8 Caracas,10.5,-66.9 Catamarca,-28.5,-65.8 Cayenne,4.9,-52.3 Cayman,19.3,-81.4 Chicago,41.9,-87.7 Chihuahua,28.6,-106.1 Ciudad_Juarez,31.7,-106.5 Coral_Harbour,9.0,-79.5 Cordoba,-31.4,-64.2 Costa_Rica,9.9,-84.1 Coyhaique,-45.6,-72.1 Creston,49.1,-116.5 Cuiaba,-15.6,-56.1 Curacao,12.2,-69.0 Danmarkshavn,76.8,-18.7 Dawson,64.1,-139.4 Dawson_Creek,55.8,-120.2 Denver,39.7,-105.0 Detroit,42.3,-83.0 Dominica,15.3,-61.4 Edmonton,53.5,-113.5 Eirunepe,-6.7,-69.9 El_Salvador,13.7,-89.2 Ensenada,32.5,-117.0 Fort_Nelson,58.8,-122.7 Fort_Wayne,39.8,-86.2 Fortaleza,-3.7,-38.5 Glace_Bay,46.2,-60.0 Godthab,64.2,-51.7 Goose_Bay,53.3,-60.4 Grand_Turk,21.5,-71.1 Grenada,12.1,-61.8 Guadeloupe,16.2,-61.5 Guatemala,14.6,-90.5 Guayaquil,-2.2,-79.8 Guyana,6.8,-58.2 Halifax,44.6,-63.6 Havana,23.1,-82.4 Hermosillo,29.1,-111.0 Indiana/Indianapolis,39.8,-86.2 Indiana/Knox,41.3,-86.6 Indiana/Marengo,38.4,-86.3 Indiana/Petersburg,38.5,-87.3 Indiana/Tell_City,38.0,-86.8 Indiana/Vevay,38.7,-85.1 Indiana/Vincennes,38.7,-87.5 Indiana/Winamac,41.1,-86.6 Indianapolis,39.8,-86.2 Inuvik,68.3,-133.7 Iqaluit,63.7,-68.5 Jamaica,18.0,-76.8 Jujuy,-24.2,-65.3 Juneau,58.3,-134.4 Kentucky/Louisville,38.3,-85.8 Kentucky/Monticello,36.8,-84.8 Knox_IN,41.3,-86.6 Kralendijk,12.2,-68.3 La_Paz,-16.5,-68.2 Lima,-12.1,-77.0 Los_Angeles,34.1,-118.2 Louisville,38.3,-85.8 Lower_Princes,18.1,-63.0 Maceio,-9.7,-35.7 Managua,12.2,-86.3 Manaus,-3.1,-60.0 Marigot,18.1,-63.1 Martinique,14.6,-61.1 Matamoros,25.8,-97.5 Mazatlan,23.2,-106.4 Mendoza,-32.9,-68.8 Menominee,45.1,-87.6 Merida,21.0,-89.6 Metlakatla,55.1,-131.6 Mexico_City,19.4,-99.2 Miquelon,47.0,-56.3 Moncton,46.1,-64.8 Monterrey,25.7,-100.3 Montevideo,-34.9,-56.2 Montreal,43.6,-79.4 Montserrat,16.7,-62.2 Nassau,25.1,-77.3 New_York,40.7,-74.0 Nipigon,43.6,-79.4 Nome,64.5,-165.4 Noronha,-3.9,-32.4 North_Dakota/Beulah,47.3,-101.8 North_Dakota/Center,47.1,-101.3 North_Dakota/New_Salem,46.8,-101.4 Nuuk,64.2,-51.7 Ojinaga,29.6,-104.4 Panama,9.0,-79.5 Pangnirtung,63.7,-68.5 Paramaribo,5.8,-55.2 Phoenix,33.4,-112.1 Port-au-Prince,18.5,-72.3 Port_of_Spain,10.7,-61.5 Porto_Acre,-10.0,-67.8 Porto_Velho,-8.8,-63.9 Puerto_Rico,18.5,-66.1 Punta_Arenas,-53.1,-70.9 Rainy_River,49.9,-97.2 Rankin_Inlet,62.8,-92.1 Recife,-8.1,-34.9 Regina,50.4,-104.7 Resolute,74.7,-94.8 Rio_Branco,-10.0,-67.8 Rosario,-31.4,-64.2 Santa_Isabel,32.5,-117.0 Santarem,-2.4,-54.9 Santiago,-33.5,-70.7 Santo_Domingo,18.5,-69.9 Sao_Paulo,-23.5,-46.6 Scoresbysund,70.5,-22.0 Shiprock,39.7,-105.0 Sitka,57.2,-135.3 St_Barthelemy,17.9,-62.9 St_Johns,47.6,-52.7 St_Kitts,17.3,-62.7 St_Lucia,14.0,-61.0 St_Thomas,18.4,-64.9 St_Vincent,13.2,-61.2 Swift_Current,50.3,-107.8 Tegucigalpa,14.1,-87.2 Thule,76.6,-68.8 Thunder_Bay,43.6,-79.4 Tijuana,32.5,-117.0 Toronto,43.6,-79.4 Tortola,18.4,-64.6 Vancouver,49.3,-123.1 Virgin,18.5,-66.1 Whitehorse,60.7,-135.1 Winnipeg,49.9,-97.2 Yakutat,59.5,-139.7 Yellowknife,53.5,-113.5;Antarctica|Casey,-66.3,110.5 Davis,-68.6,78.0 DumontDUrville,-66.7,140.0 Macquarie,-54.5,158.9 Mawson,-67.6,62.9 McMurdo,-77.8,166.6 Palmer,-64.8,-64.1 Rothera,-67.6,-68.1 South_Pole,-36.9,174.8 Syowa,-69.0,39.6 Troll,-72.0,2.5 Vostok,-78.4,106.9;Arctic|Longyearbyen,78.0,16.0;Asia|Aden,12.8,45.2 Almaty,43.2,77.0 Amman,31.9,35.9 Anadyr,64.8,177.5 Aqtau,44.5,50.3 Aqtobe,50.3,57.2 Ashgabat,38.0,58.4 Ashkhabad,38.0,58.4 Atyrau,47.1,51.9 Baghdad,33.4,44.4 Bahrain,26.4,50.6 Baku,40.4,49.9 Bangkok,13.8,100.5 Barnaul,53.4,83.8 Beirut,33.9,35.5 Bishkek,42.9,74.6 Brunei,4.9,114.9 Calcutta,22.5,88.4 Chita,52.0,113.5 Choibalsan,47.9,106.9 Chongqing,31.2,121.5 Chungking,31.2,121.5 Colombo,6.9,79.8 Dacca,23.7,90.4 Damascus,33.5,36.3 Dhaka,23.7,90.4 Dili,-8.6,125.6 Dubai,25.3,55.3 Dushanbe,38.6,68.8 Famagusta,35.1,34.0 Gaza,31.5,34.5 Harbin,31.2,121.5 Hebron,31.5,35.1 Ho_Chi_Minh,10.8,106.7 Hong_Kong,22.3,114.2 Hovd,48.0,91.7 Irkutsk,52.3,104.3 Istanbul,41.0,29.0 Jakarta,-6.2,106.8 Jayapura,-2.5,140.7 Jerusalem,31.8,35.2 Kabul,34.5,69.2 Kamchatka,53.0,158.7 Karachi,24.9,67.0 Kashgar,43.8,87.6 Kathmandu,27.7,85.3 Katmandu,27.7,85.3 Khandyga,62.7,135.6 Kolkata,22.5,88.4 Krasnoyarsk,56.0,92.8 Kuala_Lumpur,3.2,101.7 Kuching,1.6,110.3 Kuwait,29.3,48.0 Macao,22.2,113.5 Macau,22.2,113.5 Magadan,59.6,150.8 Makassar,-5.1,119.4 Manila,14.6,121.0 Muscat,23.6,58.6 Nicosia,35.2,33.4 Novokuznetsk,53.8,87.1 Novosibirsk,55.0,82.9 Omsk,55.0,73.4 Oral,51.2,51.4 Phnom_Penh,11.6,104.9 Pontianak,-0.0,109.3 Pyongyang,39.0,125.8 Qatar,25.3,51.5 Qostanay,53.2,63.6 Qyzylorda,44.8,65.5 Rangoon,16.8,96.2 Riyadh,24.6,46.7 Saigon,10.8,106.7 Sakhalin,47.0,142.7 Samarkand,39.7,66.8 Seoul,37.5,127.0 Shanghai,31.2,121.5 Singapore,1.3,103.8 Srednekolymsk,67.5,153.7 Taipei,25.1,121.5 Tashkent,41.3,69.3 Tbilisi,41.7,44.8 Tehran,35.7,51.4 Tel_Aviv,31.8,35.2 Thimbu,27.5,89.7 Thimphu,27.5,89.7 Tokyo,35.7,139.7 Tomsk,56.5,85.0 Ujung_Pandang,-5.1,119.4 Ulaanbaatar,47.9,106.9 Ulan_Bator,47.9,106.9 Urumqi,43.8,87.6 Ust-Nera,64.6,143.2 Vientiane,18.0,102.6 Vladivostok,43.2,131.9 Yakutsk,62.0,129.7 Yangon,16.8,96.2 Yekaterinburg,56.9,60.6 Yerevan,40.2,44.5;Atlantic|Azores,37.7,-25.7 Bermuda,32.3,-64.8 Canary,28.1,-15.4 Cape_Verde,14.9,-23.5 Faeroe,62.0,-6.8 Faroe,62.0,-6.8 Jan_Mayen,52.5,13.4 Madeira,32.6,-16.9 Reykjavik,64.2,-21.9 South_Georgia,-54.3,-36.5 St_Helena,-15.9,-5.7 Stanley,-51.7,-57.9;Australia|ACT,-33.9,151.2 Adelaide,-34.9,138.6 Brisbane,-27.5,153.0 Broken_Hill,-31.9,141.4 Canberra,-33.9,151.2 Currie,-42.9,147.3 Darwin,-12.5,130.8 Eucla,-31.7,128.9 Hobart,-42.9,147.3 LHI,-31.6,159.1 Lindeman,-20.3,149.0 Lord_Howe,-31.6,159.1 Melbourne,-37.8,145.0 NSW,-33.9,151.2 North,-12.5,130.8 Perth,-31.9,115.8 Queensland,-27.5,153.0 South,-34.9,138.6 Sydney,-33.9,151.2 Tasmania,-42.9,147.3 Victoria,-37.8,145.0 West,-31.9,115.8 Yancowinna,-31.9,141.4;Europe|Amsterdam,52.4,4.9 Andorra,42.5,1.5 Astrakhan,46.4,48.0 Athens,38.0,23.7 Belfast,51.5,-0.1 Belgrade,44.8,20.5 Berlin,52.5,13.4 Bratislava,48.1,17.1 Brussels,50.8,4.3 Bucharest,44.4,26.1 Budapest,47.5,19.1 Busingen,47.7,8.7 Chisinau,47.0,28.8 Copenhagen,55.7,12.6 Dublin,53.3,-6.2 Gibraltar,36.1,-5.3 Guernsey,49.5,-2.5 Helsinki,60.2,25.0 Isle_of_Man,54.1,-4.5 Istanbul,41.0,29.0 Jersey,49.2,-2.1 Kaliningrad,54.7,20.5 Kiev,50.4,30.5 Kirov,58.6,49.6 Kyiv,50.4,30.5 Lisbon,38.7,-9.1 Ljubljana,46.0,14.5 London,51.5,-0.1 Luxembourg,49.6,6.2 Madrid,40.4,-3.7 Malta,35.9,14.5 Mariehamn,60.1,19.9 Minsk,53.9,27.6 Monaco,43.7,7.4 Moscow,55.8,37.6 Nicosia,35.2,33.4 Oslo,59.9,10.8 Paris,48.9,2.3 Podgorica,42.4,19.3 Prague,50.1,14.4 Riga,57.0,24.1 Rome,41.9,12.5 Samara,53.2,50.1 San_Marino,43.9,12.5 Sarajevo,43.9,18.4 Saratov,51.6,46.0 Simferopol,45.0,34.1 Skopje,42.0,21.4 Sofia,42.7,23.3 Stockholm,59.3,18.1 Tallinn,59.4,24.8 Tirane,41.3,19.8 Tiraspol,47.0,28.8 Ulyanovsk,54.3,48.4 Uzhgorod,50.4,30.5 Vaduz,47.1,9.5 Vatican,41.9,12.5 Vienna,48.2,16.3 Vilnius,54.7,25.3 Volgograd,48.7,44.4 Warsaw,52.2,21.0 Zagreb,45.8,16.0 Zaporozhye,50.4,30.5 Zurich,47.4,8.5;Indian|Antananarivo,-18.9,47.5 Chagos,-7.3,72.4 Christmas,-10.4,105.7 Cocos,-12.2,96.9 Comoro,-11.7,43.3 Kerguelen,-49.4,70.2 Mahe,-4.7,55.5 Maldives,4.2,73.5 Mauritius,-20.2,57.5 Mayotte,-12.8,45.2 Reunion,-20.9,55.5;Pacific|Apia,-13.8,-171.7 Auckland,-36.9,174.8 Bougainville,-6.2,155.6 Chatham,-44.0,-176.6 Chuuk,7.4,151.8 Easter,-27.1,-109.4 Efate,-17.7,168.4 Enderbury,-2.8,-171.7 Fakaofo,-9.4,-171.2 Fiji,-18.1,178.4 Funafuti,-8.5,179.2 Galapagos,-0.9,-89.6 Gambier,-23.1,-134.9 Guadalcanal,-9.5,160.2 Guam,13.5,144.8 Honolulu,21.3,-157.9 Johnston,21.3,-157.9 Kanton,-2.8,-171.7 Kiritimati,1.9,-157.3 Kosrae,5.3,163.0 Kwajalein,9.1,167.3 Majuro,7.2,171.2 Marquesas,-9.0,-139.5 Midway,28.2,-177.4 Nauru,-0.5,166.9 Niue,-19.0,-169.9 Norfolk,-29.1,168.0 Noumea,-22.3,166.4 Pago_Pago,-14.3,-170.7 Palau,7.3,134.5 Pitcairn,-25.1,-130.1 Pohnpei,7.0,158.2 Ponape,-9.5,160.2 Port_Moresby,-9.5,147.2 Rarotonga,-21.2,-159.8 Saipan,15.2,145.8 Samoa,-14.3,-170.7 Tahiti,-17.5,-149.6 Tarawa,1.4,173.0 Tongatapu,-21.1,-175.2 Truk,-9.5,147.2 Wake,19.3,166.6 Wallis,-13.3,-176.2 Yap,-9.5,147.2;";
+
+	function zoneCoords(tz) {
+		var cut = tz.indexOf("/");
+		if (cut < 0) return null;
+		var region = ZONE_COORDS.indexOf(";" + tz.slice(0, cut) + "|");
+		if (region < 0) return null;
+		var start = ZONE_COORDS.indexOf("|", region) + 1;
+		var cities = ZONE_COORDS.slice(start, ZONE_COORDS.indexOf(";", start)).split(" ");
+		var want = tz.slice(cut + 1);
+		for (var i = 0; i < cities.length; i++) {
+			var field = cities[i].split(",");
+			if (field[0] === want) {
+				return { lat: parseFloat(field[1]) * DEG, lon: parseFloat(field[2]) * DEG };
+			}
+		}
+		return null;
+	}
+
+	var YOU = zoneCoords(youTz) || LONDON;
+
 	// ---------------- Sun panel ----------------
 	var sunRise = document.getElementById("sun-rise");
 	var sunSet = document.getElementById("sun-set");
 	var sunLength = document.getElementById("sun-length");
 
 	function fmtClock(ms) {
-		return new Date(ms).toLocaleTimeString("en-GB", {
-			timeZone: "Europe/London", hour: "2-digit", minute: "2-digit", hour12: false,
-		});
+		try {
+			return new Date(ms).toLocaleTimeString("en-GB", {
+				timeZone: youTz, hour: "2-digit", minute: "2-digit", hour12: false,
+			});
+		} catch (e) {
+			return new Date(ms).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+		}
 	}
 
 	function fmtDuration(hours) {
@@ -298,7 +330,7 @@
 	}
 
 	function tickSun(now) {
-		var d = daylight(now, LONDON);
+		var d = daylight(now, YOU);
 		if (d.polar) {
 			if (sunRise) sunRise.textContent = "—";
 			if (sunSet) sunSet.textContent = "—";
