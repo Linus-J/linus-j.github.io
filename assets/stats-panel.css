@@ -1,137 +1,45 @@
-/* ---------------- Stats panel: shared engine styles ----------------
-   The FPL panel keeps its frame: unlike the globe it is a data surface
-   with its own header and run selector, so the border does real work. */
+/* ---------------- Stats panel: shared engine chrome ----------------
+   No frame. The panel is a section of the page like any other: a heading
+   sitting on a rule, with the run selector parked at the far end of it.
+   Everything the panel actually draws — tables, ASCII plots, the event
+   log — uses the site-wide data primitives in style.css. */
 
-.stats-panel {
-	background: var(--bg-panel);
-	border: 1px solid var(--line);
-	margin-top: 2rem;
-}
+.stats-panel { margin-top: 2rem; }
 
 .stats-panel-header {
 	display: flex;
-	align-items: center;
+	align-items: baseline;
 	justify-content: space-between;
 	gap: 1rem;
-	padding: 0.6rem 1rem;
-	background: var(--bg-panel-2);
-	border-bottom: 1px solid var(--line);
 	flex-wrap: wrap;
+	margin-bottom: 1.25rem;
+	padding-bottom: 0.3rem;
+	border-bottom: 1px solid var(--line);
 }
+/* The rule belongs to the header row, which also carries the select, so
+   the h2 gives up its own. */
 .stats-panel-header h2 {
 	margin: 0;
-	border: none;
 	padding: 0;
-	font-family: var(--mono);
-	font-size: var(--mono-base);
-	color: var(--fg-faint);
+	border: none;
 }
 
+/* A control, not a figure — so it takes the page's prose face like every
+   other piece of running text. */
 .stats-panel-select {
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	background: var(--bg-panel);
-	color: var(--fg-dim);
-	border: 1px solid var(--line);
-	padding: 0.25rem 0.5rem;
+	font: inherit;
+	color: var(--fg);
+	background: var(--bg);
+	border: 1px solid var(--line-strong);
+	padding: 0.1rem 0.35rem;
 }
-.stats-panel-select:hover { border-color: var(--line-bright); }
 
-.stats-panel-body { padding: 1.1rem 1.1rem 1.4rem; position: relative; }
+.stats-panel-body > section + section { margin-top: 2.25rem; }
+/* Sections space themselves; whatever opens one — a key line or a
+   heading — starts flush so that spacing isn't applied twice. */
+.stats-panel-body > section > *:first-child { margin-top: 0; }
 
 .stats-panel-message {
 	color: var(--fg-faint);
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	text-align: center;
-	padding: 2.5rem 1rem;
+	padding: 1.5rem 0;
 }
-.stats-panel-message a { font-size: var(--mono-sm); }
-
-/* ---------------- Ranked xPts bars ----------------
-   Name on its own row, so nothing can overlap. The bar is the mean; the
-   thin strip below it spans the 10th-90th percentile. */
-
-.xpts-list {
-	display: grid;
-	gap: 0.3rem;
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-}
-
-.xpts-row {
-	display: grid;
-	grid-template-columns: minmax(0, 16ch) 1fr 3.5ch;
-	align-items: center;
-	gap: 0.75rem;
-}
-
-.xpts-name {
-	color: var(--fg-dim);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.xpts-track {
-	position: relative;
-	height: 13px;
-	border-left: 1px solid var(--line);
-}
-
-.xpts-bar {
-	position: absolute;
-	left: 0;
-	top: 0;
-	height: 7px;
-	background: var(--accent);
-	opacity: 0.85;
-}
-
-/* Same hue as the mean bar — it measures the same quantity — but
-   subordinate in weight, and on its own row so the two never overlap. */
-.xpts-range {
-	position: absolute;
-	top: 9px;
-	height: 3px;
-	background: var(--accent-quiet);
-}
-
-.xpts-mean {
-	color: var(--fg);
-	text-align: right;
-	font-variant-numeric: tabular-nums;
-}
-
-
-@media (max-width: 460px) {
-	.xpts-row { grid-template-columns: minmax(0, 10ch) 1fr 3.5ch; gap: 0.5rem; }
-}
-
-/* ---------------- Timeline ---------------- */
-
-.timeline-list { display: flex; flex-direction: column; }
-.timeline-row { display: flex; gap: 0.7rem; align-items: stretch; }
-.timeline-rail { display: flex; flex-direction: column; align-items: center; }
-.timeline-dot { width: 7px; height: 7px; flex-shrink: 0; margin-top: 5px; background: var(--accent); }
-.timeline-dot--chip {
-	background: none;
-	border: 1px solid var(--fg-dim);
-}
-.timeline-rail::after {
-	content: "";
-	display: block;
-	width: 1px;
-	flex: 1;
-	background: var(--line);
-	margin: 2px auto 0;
-}
-.timeline-row:last-child .timeline-rail::after { display: none; }
-.timeline-text {
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	color: var(--fg-dim);
-	padding-bottom: 0.9rem;
-}
-.timeline-gw { color: var(--accent); }
-.timeline-empty { color: var(--fg-faint); font-family: var(--mono); font-size: var(--mono-sm); }

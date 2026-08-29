@@ -1,10 +1,14 @@
 /* FPL-specific stats panel: config + squad/top15/history rendering.
-   Everything generic (fetch, select, loading/error states, chart/timeline
-   components) lives in stats-panel.js and assets/charts/. */
+   Everything generic (fetch, select, loading/error states, the ASCII
+   chart and the event log) lives in stats-panel.js and assets/charts/.
+
+   The squad is a table because it is a table: eleven rows of the same
+   five fields. Cards made every row its own little frame and then had to
+   re-align them by hand; a <table> aligns by construction, sorts the eye
+   down a column, and prints. */
 
 var FplPanel = (function () {
-	var POSITION_ORDER = ["FWD", "MID", "DEF", "GKP"];
-	var POSITION_LABELS = { FWD: "Forwards", MID: "Midfielders", DEF: "Defenders", GKP: "Goalkeeper" };
+	var POSITION_ORDER = ["GKP", "DEF", "MID", "FWD"];
 
 	function el(tag, className) {
 		var node = document.createElement(tag);
@@ -12,164 +16,155 @@ var FplPanel = (function () {
 		return node;
 	}
 
-	function sectionHeading(text) {
-		var heading = el("h3", "fpl-section-heading");
-		heading.textContent = text;
-		return heading;
-	}
-
-	/* One line of plain English under a heading, so no graphic on the page
-	   has to be guessed at. */
-	function key(text) {
-		var node = el("p", "fpl-key");
+	function heading(text) {
+		var node = el("h3");
 		node.textContent = text;
 		return node;
 	}
 
+	/* One line of plain English under a heading, so no figure on the page
+	   has to be guessed at. */
+	function key(text) {
+		var node = el("p", "meta");
+		node.textContent = text;
+		return node;
+	}
+
+	function cell(row, text, className) {
+		var td = el("td", className);
+		td.textContent = text;
+		row.appendChild(td);
+		return td;
+	}
+
 	function armband(player) {
-		if (player.is_captain) return { suffix: " (C)", cls: "fpl-card--captain", label: "captain" };
-		if (player.is_vice_captain) return { suffix: " (V)", cls: "fpl-card--vice", label: "vice-captain" };
-		return null;
+		if (player.is_captain) return " (C)";
+		if (player.is_vice_captain) return " (V)";
+		return "";
 	}
 
-	function buildPlayerCard(player, prevIds, prevXpts) {
-		var card = el("div", "fpl-card");
-		card.dataset.playerId = player.player_id;
-		var role = armband(player);
-		if (role) card.classList.add(role.cls);
-		if (prevIds && !prevIds.has(player.player_id)) card.classList.add("fpl-card--new");
-		if (prevXpts && player.player_id in prevXpts) {
-			var prevMean = prevXpts[player.player_id];
-			var newMean = player.xpts ? player.xpts.mean : null;
-			if (prevMean !== newMean) card.classList.add("fpl-card--changed");
+	function headerRow(showMarks) {
+		var tr = el("tr");
+		var labels = ["Player", "Pos", "Cost (m)", "xPts", "10-90"];
+		if (showMarks) {
+			var mark = el("th", "col-mark");
+			mark.setAttribute("scope", "col");
+			// The column's meaning is spelled out in the key beneath the
+			// table; a visible header for one character of gutter would
+			// be wider than the column it labels.
+			mark.appendChild(document.createTextNode(""));
+			tr.appendChild(mark);
 		}
-
-		var name = el("div", "fpl-card-name");
-		name.textContent = role ? player.web_name + role.suffix : player.web_name;
-		var meta = el("div", "fpl-card-meta");
-		meta.textContent = player.position + " \u00b7 \u00a3" + player.now_cost.toFixed(1);
-
-		// The projection reads as plain labelled numbers: the mean, then the
-		// interval it falls in. The key above the squad says what both are.
-		var figure = el("div", "fpl-card-figure");
-		var mean = el("span", "fpl-card-mean");
-		mean.textContent = player.xpts ? player.xpts.mean.toFixed(1) : "\u2014";
-		var unit = el("span", "fpl-card-unit");
-		unit.textContent = "xPts";
-		figure.appendChild(mean);
-		figure.appendChild(unit);
-
-		var range = Distribution.formatRange(player.xpts);
-		if (range != null) {
-			var rangeEl = el("span", "fpl-card-range");
-			rangeEl.textContent = range;
-			figure.appendChild(rangeEl);
-		}
-
-		// The card's own title carries the full name, so a name clipped by
-		// the ellipsis is still readable on hover.
-		card.title = Distribution.describe(player) + (role ? " \u00b7 " + role.label : "");
-
-		card.appendChild(name);
-		card.appendChild(meta);
-		card.appendChild(figure);
-		return card;
+		labels.forEach(function (label, i) {
+			var th = el("th", i >= 2 ? "num" : null);
+			th.setAttribute("scope", "col");
+			th.textContent = label;
+			tr.appendChild(th);
+		});
+		return tr;
 	}
 
-	function buildSquadSection(squad, prevIds, prevXpts) {
-		var section = el("section", "fpl-squad");
-		section.appendChild(key("xPts = mean projected points \u00b7 range = " + Distribution.describeBasis(Distribution.basisOf(squad))));
-		var starters = squad.filter(function (p) { return p.is_starting; });
+	function playerRow(player, prevIds, showMarks) {
+		var tr = el("tr");
+		if (showMarks) {
+			cell(tr, prevIds && !prevIds.has(player.player_id) ? "+" : "", "col-mark");
+		}
+
+		var name = cell(tr, player.web_name + armband(player));
+		// The row title carries the full description, so a truncated name
+		// or an unfamiliar percentile is still readable on hover.
+		tr.title = Distribution.describe(player);
+		if (player.is_captain || player.is_vice_captain) name.className = "is-armband";
+
+		cell(tr, player.position);
+		cell(tr, player.now_cost.toFixed(1), "num");
+		cell(tr, player.xpts ? player.xpts.mean.toFixed(1) : "-", "num");
+		cell(tr, Distribution.formatRange(player.xpts) || "-", "num");
+		return tr;
+	}
+
+	function buildTable(players, prevIds, showMarks) {
+		var table = el("table", "data");
+		var thead = el("thead");
+		thead.appendChild(headerRow(showMarks));
+		var tbody = el("tbody");
+		players.forEach(function (p) { tbody.appendChild(playerRow(p, prevIds, showMarks)); });
+		table.appendChild(thead);
+		table.appendChild(tbody);
+		return table;
+	}
+
+	function byPositionThenXpts(a, b) {
+		var order = POSITION_ORDER.indexOf(a.position) - POSITION_ORDER.indexOf(b.position);
+		if (order !== 0) return order;
+		return (b.xpts ? b.xpts.mean : -Infinity) - (a.xpts ? a.xpts.mean : -Infinity);
+	}
+
+	function buildSquadSection(squad, prevIds) {
+		var section = el("section");
+		var showMarks = !!prevIds && squad.some(function (p) { return !prevIds.has(p.player_id); });
+
+		section.appendChild(key(
+			"xPts = mean projected points · 10-90 = " +
+			Distribution.describeBasis(Distribution.basisOf(squad)) +
+			" · cost in millions · (C) captain, (V) vice-captain" +
+			(showMarks ? " · + = new since the gameweek you last viewed" : "")
+		));
+
+		var starters = squad.filter(function (p) { return p.is_starting; }).sort(byPositionThenXpts);
 		var bench = squad
 			.filter(function (p) { return !p.is_starting; })
 			.sort(function (a, b) { return (a.bench_order || 0) - (b.bench_order || 0); });
 
-		POSITION_ORDER.forEach(function (pos) {
-			var players = starters.filter(function (p) { return p.position === pos; });
-			if (!players.length) return;
-			var label = el("h3", "fpl-position-label");
-			label.textContent = POSITION_LABELS[pos];
-			var list = el("div", "fpl-position-list");
-			players.forEach(function (p) { list.appendChild(buildPlayerCard(p, prevIds, prevXpts)); });
-			section.appendChild(label);
-			section.appendChild(list);
-		});
+		section.appendChild(heading("Starting XI"));
+		section.appendChild(buildTable(starters, prevIds, showMarks));
 
 		if (bench.length) {
-			var benchLabel = el("h3", "fpl-position-label fpl-position-label--bench");
-			benchLabel.textContent = "Bench";
-			var benchList = el("div", "fpl-position-list");
-			bench.forEach(function (p) { benchList.appendChild(buildPlayerCard(p, prevIds, prevXpts)); });
-			section.appendChild(benchLabel);
-			section.appendChild(benchList);
+			section.appendChild(heading("Bench"));
+			section.appendChild(buildTable(bench, prevIds, showMarks));
 		}
-
 		return section;
 	}
 
+	/* Returns the section plus the still-empty node the plot goes into.
+	   The plot sizes its columns to the measured width of that node, so it
+	   can only be drawn once the section is in the document — hence the
+	   split between building this and filling it in renderRun. */
 	function buildTop15Section(top15) {
-		var section = el("section", "fpl-top15");
-		var chart = el("div", "fpl-top15-chart");
-		var hasSpread = Distribution.renderRanked(chart, top15);
-		section.appendChild(sectionHeading("Top 15 by xPts"));
-		section.appendChild(key(hasSpread
-			? "bar = mean xPts \u00b7 strip = " + Distribution.describeBasis(Distribution.basisOf(top15))
-			: "bar = mean xPts"));
+		var section = el("section");
+		var chart = el("div");
+
+		section.appendChild(heading("Top 15 by xPts"));
+		section.appendChild(key(Distribution.hasSpread(top15)
+			? "# = mean xPts · [....] = " + Distribution.describeBasis(Distribution.basisOf(top15))
+			: "# = mean xPts"));
 		section.appendChild(chart);
-		return section;
+		return { section: section, chart: chart };
 	}
 
 	function buildHistorySection(history) {
-		var section = el("section", "fpl-history");
-		section.appendChild(sectionHeading("History"));
-		var timeline = el("div", "fpl-timeline");
-		section.appendChild(timeline);
-		Timeline.render(timeline, history);
+		var section = el("section");
+		section.appendChild(heading("History"));
+		var log = el("div");
+		section.appendChild(log);
+		Timeline.render(log, history);
 		return section;
 	}
 
 	function renderRun(body, run, prevRun) {
-		var prevIds = null;
-		var prevXpts = null;
-		if (prevRun) {
-			prevIds = new Set(prevRun.squad.map(function (p) { return p.player_id; }));
-			prevXpts = {};
-			prevRun.squad.forEach(function (p) {
-				prevXpts[p.player_id] = p.xpts ? p.xpts.mean : null;
-			});
-		}
+		var prevIds = prevRun
+			? new Set(prevRun.squad.map(function (p) { return p.player_id; }))
+			: null;
 
-		var newRun = el("div", "fpl-run");
-		newRun.appendChild(buildSquadSection(run.squad, prevIds, prevXpts));
-		newRun.appendChild(buildTop15Section(run.top15));
-		newRun.appendChild(buildHistorySection(run.history));
+		var top15 = buildTop15Section(run.top15);
 
-		if (!prevRun) {
-			body.innerHTML = "";
-			body.appendChild(newRun);
-			return;
-		}
+		body.innerHTML = "";
+		body.appendChild(buildSquadSection(run.squad, prevIds));
+		body.appendChild(top15.section);
+		body.appendChild(buildHistorySection(run.history));
 
-		var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-		newRun.classList.add("fpl-run--entering");
-		body.appendChild(newRun);
-		void newRun.offsetWidth; // force reflow so the transition actually plays
-		newRun.classList.remove("fpl-run--entering");
-
-		Array.prototype.slice.call(body.children)
-			.filter(function (node) { return node !== newRun; })
-			.forEach(function (oldRun) {
-				oldRun.classList.add("fpl-run--leaving");
-				// Under reduced motion, fpl-run--leaving changes no animatable
-				// property (see fpl.css), so transitionend never fires — remove
-				// immediately instead of waiting for an event that won't come.
-				if (reducedMotion) {
-					oldRun.remove();
-				} else {
-					oldRun.addEventListener("transitionend", function () { oldRun.remove(); }, { once: true });
-				}
-			});
+		// Only now is the chart's container in the document and measurable.
+		Distribution.renderRanked(top15.chart, run.top15);
 	}
 
 	return {

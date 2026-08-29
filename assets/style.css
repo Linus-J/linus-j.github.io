@@ -1,8 +1,18 @@
 /* ---------------------------------------------------------------
-   Linus Jeary — personal site, v3
-   Editorial minimalism: Source Serif 4 for prose, JetBrains Mono for
-   labels and data. Flat ink ground, square hairline borders, two
-   accents. Dark theme, no build step.
+   Linus Jeary — personal site, v4
+
+   A document, not an interface. White paper, black ink, one link
+   colour that the browser has used since 1993. Structure comes from
+   hairline rules and whitespace: there are no boxes, no cards, no
+   tinted panels and no chart libraries anywhere on the site.
+
+   One face sets everything read as prose — headings, nav, captions, the
+   event log. Monospace is kept for the figures, the things read by
+   running the eye down a column: the data tables and the ASCII plots,
+   both of which live on the FPL page, plus the globe. It appears once
+   more in the print stylesheet, where link targets are spelled out and
+   telling l from 1 and O from 0 matters to someone retyping one. Three
+   type sizes total, no build step.
 ------------------------------------------------------------- */
 
 /* Source Serif 4 (SIL OFL, see woff2/OFL-sourceserif4.txt) — lower-contrast,
@@ -25,8 +35,10 @@
 
 /* JetBrains Mono (SIL OFL, see woff2/OFL-jetbrainsmono.txt) — subsetted to
    ASCII + the handful of extra glyphs the UI chrome uses (— · … → ±),
-   ~550KB down to ~9KB. Regenerate from the full woff2/jetbrainsmono*.ttf
-   if new glyphs are ever needed:
+   ~550KB down to ~9KB. The ASCII plots and the globe draw only from the
+   ASCII half of that set (# [ ] | - . : * @), so nothing here needs a
+   wider subset. Regenerate from the full woff2/jetbrainsmono*.ttf if new
+   glyphs are ever needed:
      pyftsubset woff2/jetbrainsmono.ttf --output-file=woff2/jetbrainsmono-subset.woff2 --flavor=woff2 --unicodes=... */
 @font-face {
 	font-family: "JetBrains Mono";
@@ -41,48 +53,44 @@
 }
 
 :root {
-	--bg: #0a0a0b;
-	--bg-panel: #121214;
-	--bg-panel-2: #17171a;
-	--line: #26262b;
-	--line-bright: #3a3a42;
-	--fg: #ececee;
-	--fg-dim: #9a9aa2;
-	--fg-faint: #64646d;
+	--bg: #ffffff;
+	--fg: #000000;
+	/* #555 and #767676 are the darkest greys that still read as "quieter
+	   than the prose"; #767676 is the lightest text tone that clears
+	   WCAG AA (4.5:1) on white, so nothing quieter carries any words. */
+	--fg-dim: #555555;
+	--fg-faint: #767676;
 
-	/* Two accents only: one structural (headings, labels, data),
-	   one for links. Everything else earns emphasis through weight,
-	   size and letterspacing rather than another hue. */
-	--accent: #3ecdc2;
-	--accent-quiet: rgba(62, 205, 194, 0.35);
-	--link: #ff5c8a;
-	--link-quiet: rgba(255, 92, 138, 0.35);
+	--line: #cccccc;
+	--line-strong: #000000;
+
+	/* The browser's own link colours. Any other pair would be a brand
+	   decision, and a page like this doesn't have a brand. */
+	--link: #0000ee;
+	--link-visited: #551a8b;
 
 	--serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
 	--mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 
-	--content-w: 780px;
+	--content-w: 720px;
 
-	/* The mono is one typeface set one way — sentence case, no tracking,
-	   three sizes. Every label reads like the tagline does. */
-	--mono-sm: 0.78rem;      /* quiet labels: captions, tags, meta */
-	--mono-base: 0.86rem;    /* the default: tagline, nav, headings, data */
-	--mono-lg: 1.1rem;       /* the numbers worth reading first */
+	/* The whole scale. Body text is 1rem and is not listed here; anything
+	   that wants to be quieter than the prose changes colour, not size. */
+	--size-h1: 1.9rem;
+	--size-h2: 1.15rem;
 }
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
-
 body {
 	background: var(--bg);
 	color: var(--fg);
-	font-family: var(--serif), sans-serif;
+	font-family: var(--serif), serif;
 	font-size: 17px;
 	line-height: 1.6;
 	margin: 0;
 	padding: 0 1.25rem;
-	-webkit-font-smoothing: antialiased;
+	-webkit-text-size-adjust: 100%;
 }
 
 main {
@@ -90,183 +98,188 @@ main {
 	margin: 0 auto;
 }
 
-::selection { background: var(--accent); color: var(--bg); }
-
 /* ---------------- Typography ---------------- */
 
-h1, h2, h3 { font-weight: normal; line-height: 1.25; }
+h1, h2, h3 { line-height: 1.25; }
 
 h1 {
-	color: var(--fg);
-	font-size: 2.1rem;
-	letter-spacing: 0.01em;
+	font-size: var(--size-h1);
+	font-weight: bold;
 	margin: 0;
 }
 
+/* h2 and h3 are the same size and weight; the rule under an h2 is what
+   separates them. A section break and a subheading are different jobs,
+   not different magnitudes. */
 h2 {
-	color: var(--accent);
-	font-size: 1.3rem;
-	text-align: left;
-	margin: 2.5rem 0 1rem;
-	padding-bottom: 0.4rem;
+	font-size: var(--size-h2);
+	font-weight: bold;
+	margin: 2.75rem 0 1rem;
+	padding-bottom: 0.3rem;
 	border-bottom: 1px solid var(--line);
 }
 
 h3 {
-	color: var(--accent);
-	font-size: 1.1rem;
-	text-align: left;
-	margin: 2rem 0 0.85rem;
+	font-size: var(--size-h2);
+	font-weight: bold;
+	margin: 1.75rem 0 0.3rem;
+}
+/* A bold <dt> directly under a bold <h3> reads as one four-word heading
+   unless the gap is bigger than the one between a term and its own
+   definition. Same for a table or plot introduced by a heading. */
+h3 + dl.simple-list,
+h3 + table.data { margin-top: 0.9rem; }
+
+p { margin: 0 0 0.9rem; }
+
+a { color: var(--link); }
+a:visited { color: var(--link-visited); }
+
+/* Every line of secondary text on the site: the tagline, project tech
+   lists, plot keys, captions, the footer. Same family and size as the
+   prose it sits next to — only the colour is quieter, because that is
+   the whole of the difference in importance. */
+.meta {
+	color: var(--fg-faint);
+	margin: 0.15rem 0 0.6rem;
 }
 
-p { color: var(--fg); }
+/* ---------------- One face, and the figures ----------------
+   The globe readout and the event log take the prose face. They can,
+   because Source Serif 4's figures are tabular by construction
+   — every digit shares an advance width, so number columns align down
+   the page with no help. tabular-nums is set anyway: it costs nothing
+   and covers the fallback stack, where Georgia's old-style figures would
+   otherwise wander.
 
-a {
-	color: var(--link);
-	text-decoration: none;
-	border-bottom: 1px solid var(--link-quiet);
-	transition: border-color .15s ease, color .15s ease;
+   The event log stays here rather than joining the figures below: its
+   rows are sentences with a gameweek label, not columns of numbers. */
+
+.readout,
+dl.log {
+	font-family: var(--serif);
+	font-variant-numeric: tabular-nums;
 }
-a:hover { border-color: var(--link); }
 
-.icon {
-	height: 0.85em;
-	width: 0.85em;
-	vertical-align: middle;
-	margin-right: 0.15em;
-}
+/* The figures. Both are read by running the eye down a column rather
+   than along a line, and both live together on the FPL page — setting
+   them in one face makes the data on that page read as a single family
+   instead of a table and a picture that happen to be adjacent.
 
-code, .mono {
+   For the plot the mono is not a preference but a requirement.
+   Character-cell art needs a fixed advance width, and a proportional
+   face has none: measured in Source Serif, ten spaces come to 39.6px
+   against 89.4px for ten '#'. The padding that places every pipe, bar
+   and value then lands nowhere consistent, and a percentile strip no
+   longer sits under the bar it describes.
+
+   0.85em is an optical correction, not a fourth step in the type scale:
+   at equal pixel size JetBrains Mono's x-height reads distinctly larger
+   than Source Serif's. The plot measures the real glyph advance at draw
+   time (assets/charts/distribution.js), so its column count follows this
+   size automatically. */
+
+table.data,
+pre.ascii-plot {
 	font-family: var(--mono);
-	font-size: 0.92em;
-}
-
-code {
-	color: var(--accent);
-	background: var(--bg-panel);
-	padding: 0.1em 0.35em;
-	overflow-wrap: break-word;
+	font-size: 0.85em;
 }
 
 /* ---------------- Header / nav ---------------- */
 
 .site-header {
-	padding: 3rem 0 0;
+	padding: 2.75rem 0 0;
+	margin-bottom: 2rem;
+	border-bottom: 1px solid var(--line-strong);
 }
+
+.site-header h1 + .tagline { margin-top: 0.35rem; }
 
 .tagline {
-	font-family: var(--mono);
 	color: var(--fg-dim);
-	font-size: var(--mono-base);
-	margin: 0.6rem 0 0;
+	margin: 0;
 }
 
-nav.site-nav {
+/* Index only: the portrait sits in the masthead beside the name, so the
+   prose underneath gets the full column width instead of being indented
+   around a photo for its first three paragraphs. */
+.site-header--portrait {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0 1.6rem;
-	margin-top: 1.75rem;
-	padding-top: 0.8rem;
-	border-top: 1px solid var(--line);
-	font-family: var(--mono);
-	font-size: var(--mono-base);
-}
-nav.site-nav a {
-	color: var(--fg-faint);
-	border-bottom: 1px solid transparent;
-	padding-bottom: 0.35rem;
-	margin-bottom: -1px;
-}
-nav.site-nav a:hover { color: var(--fg-dim); }
-nav.site-nav a.current {
-	color: var(--accent);
-	border-bottom-color: var(--accent);
-}
-
-/* ---------------- Hero ---------------- */
-
-.hero {
-	display: flex;
-	gap: 2.25rem;
+	gap: 1.5rem;
 	align-items: flex-start;
-	margin-top: 2.25rem;
 	flex-wrap: wrap;
 }
+.site-header--portrait > div { flex: 1 1 260px; }
 
-.hero-photo {
+.portrait {
 	flex: 0 0 auto;
-	width: 148px;
-	height: 148px;
+	width: 118px;
+	height: 118px;
 	object-fit: cover;
-	border: 1px solid var(--line-bright);
+	border: 1px solid var(--line-strong);
 }
 
-.hero-text { flex: 1 1 320px; min-width: 260px; }
-.hero-text p { margin: 0 0 0.85rem; color: var(--fg-dim); }
-.hero-text p:first-child { color: var(--fg); font-size: 1.05rem; }
+nav.site-nav { margin: 1.1rem 0 0.7rem; }
 
-.hero-links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin-top: 1.1rem;
+/* Separators are literal characters in the flow rather than borders or
+   flex gaps, so the nav wraps and reads exactly like a line of text.
+   inline-block makes the separator its own atomic box, so the link's
+   underline stops at the word and doesn't run through the slash. */
+nav.site-nav a { margin-right: 0.35rem; }
+nav.site-nav a::after {
+	content: "/";
+	display: inline-block;
+	color: var(--fg-faint);
+	margin-left: 0.35rem;
 }
-.hero-links a {
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	color: var(--fg-dim);
-	border: 1px solid var(--line);
-	padding: 0.35rem 0.8rem;
+nav.site-nav a:last-child::after { content: ""; margin: 0; }
+nav.site-nav a.current {
+	color: var(--fg);
+	font-weight: bold;
+	text-decoration: none;
 }
-.hero-links a:hover { color: var(--accent); border-color: var(--accent); }
 
 /* ---------------- Locale band (globe + clocks) ----------------
-   Deliberately unframed: a box here read as a widget bolted onto the
-   page. Two hairlines and whitespace do the separating instead. */
+   Two rules and whitespace, no frame: the globe and the figures are
+   part of the page, not a widget bolted onto it. */
 
 .locale {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	/* Globe flush left, readout flush right: the figures' right edge and
-	   the globe's left edge then line up with the band's own rules. */
 	justify-content: space-between;
-	gap: 2rem 3rem;
-	margin: 3rem 0 0;
-	padding: 2rem 0;
+	gap: 1.5rem 2.5rem;
+	margin: 2.5rem 0 0;
+	padding: 1.75rem 0;
 	border-top: 1px solid var(--line);
 	border-bottom: 1px solid var(--line);
 }
 
-/* Once the three columns wrap, space-between strands each row at a
-   different alignment — centre them instead so the stack reads evenly. */
 @media (max-width: 700px) {
 	.locale { justify-content: center; }
 }
 
-/* ---------------- Globe + readout ---------------- */
-
+/* The globe's size is a rendering resolution, not a type size — it is a
+   picture that happens to be drawn out of characters. */
 #globe {
 	font-family: var(--mono);
 	font-size: 9px;
 	line-height: 9px;
 	letter-spacing: 1px;
-	color: var(--accent);
+	color: var(--fg);
 	white-space: pre;
 	margin: 0;
 	text-align: center;
 }
 
-/* One table rather than two stacks: labels share a left edge, figures
-   share a right edge, and every row sits on a common baseline. The
-   previous columns held 2 and 3 rows, so nothing lined up with anything. */
+/* Labels share a left edge, figures share a right edge, every row sits
+   on a common baseline — the same shape as the data tables below. */
 .readout {
 	flex: 1 1 300px;
-	max-width: 420px;
+	max-width: 380px;
 	display: flex;
 	flex-direction: column;
-	gap: 0.6rem;
-	font-family: var(--mono);
+	gap: 0.5rem;
 }
 
 .readout-row {
@@ -278,101 +291,67 @@ nav.site-nav a.current {
 /* Splits the live clocks from the day's fixed solar figures. */
 .readout-row--divide {
 	border-top: 1px solid var(--line);
-	padding-top: 0.9rem;
-	margin-top: 0.3rem;
+	padding-top: 0.75rem;
+	margin-top: 0.25rem;
 }
 
-.readout-label {
-	color: var(--fg-faint);
-	font-size: var(--mono-sm);
-}
+.readout-label { color: var(--fg-faint); }
 
 .readout-value {
 	color: var(--fg);
-	font-size: var(--mono-base);
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
-.readout-value--live { color: var(--accent); }
 
 @media (max-width: 480px) {
 	#globe { font-size: 7px; line-height: 7px; }
 }
 
-/* ---------------- Project / content cards ---------------- */
+/* ---------------- Entries (projects, system write-ups) ----------------
+   What used to be a grid of cards. An entry is now just a heading, a
+   line of metadata, a paragraph and a line of links, separated from the
+   next one by space. */
 
-.card-grid {
+.entry { margin: 0 0 1.75rem; }
+.entry h3 { margin-top: 0; }
+.entry p { margin-bottom: 0.4rem; }
+
+.entry-links { margin: 0; }
+.entry-links a { margin-right: 0.9rem; }
+
+/* Entries carrying a screenshot put it alongside the prose on wide
+   screens and above it once the column gets narrow. */
+.entry--figure {
 	display: grid;
-	grid-template-columns: 1fr;
-	gap: 1rem;
+	grid-template-columns: 220px 1fr;
+	gap: 1.25rem;
+	align-items: start;
 }
-
-.card {
-	display: grid;
-	grid-template-columns: 152px 1fr;
-	gap: 1.1rem;
-	background: var(--bg-panel);
-	border: 1px solid var(--line);
-	padding: 1rem;
-	transition: border-color .15s ease, box-shadow .15s ease;
-}
-/* An inset rule rather than a lift: no layout shift, and it reads as a
-   margin mark next to the entry instead of a floating tile. */
-.card:hover {
-	border-color: var(--line-bright);
-	box-shadow: inset 2px 0 0 var(--accent);
-}
-
-.card-thumb {
+.entry--figure img {
 	width: 100%;
 	aspect-ratio: 16 / 10;
 	object-fit: cover;
-	border: 1px solid var(--line);
+	border: 1px solid var(--line-strong);
 	cursor: zoom-in;
-	background: var(--bg-panel-2);
 }
-
-.card-body h3 { margin: 0 0 0.4rem; }
-.card-body h3 a { border-bottom: none; color: inherit; }
-.card-body h3 a:hover { color: var(--accent); }
-.card-body p { margin: 0 0 0.6rem; color: var(--fg-dim); font-size: 0.95rem; }
-
-.tags {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.35rem;
-	margin-top: 0.6rem;
-}
-.tag {
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
-	color: var(--fg-faint);
-	border: 1px solid var(--line);
-	padding: 0.12rem 0.5rem;
-}
-
-.card-links { margin-top: 0.7rem; display: flex; gap: 0.9rem; }
-.card-links a { font-family: var(--mono); font-size: var(--mono-sm); }
-
-.card--text { grid-template-columns: 1fr; }
+.entry--figure > div > h3 { margin-top: 0; }
 
 @media (max-width: 560px) {
-	.card { grid-template-columns: 1fr; }
+	.entry--figure { grid-template-columns: 1fr; }
 }
 
-/* ---------------- Simple lists (software / hardware pages) ---------------- */
+/* ---------------- Definition lists (software / hardware / contact) ---------------- */
 
+dl.simple-list { margin: 0; }
 dl.simple-list dt {
 	font-weight: bold;
-	color: var(--fg);
-	margin-top: 1.4rem;
-}
-dl.simple-list dt a { color: inherit; }
-dl.simple-list dd {
-	margin: 0.3rem 0 0;
-	color: var(--fg-dim);
+	margin-top: 1.1rem;
 }
 dl.simple-list dt:first-child { margin-top: 0; }
+dl.simple-list dd {
+	margin: 0.15rem 0 0;
+	color: var(--fg-dim);
+}
 
 /* ---------------- Lightbox ---------------- */
 
@@ -380,53 +359,131 @@ dl.simple-list dt:first-child { margin-top: 0; }
 	position: fixed;
 	inset: 0;
 	z-index: 999;
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: center;
 	padding: 3rem 1.5rem;
-	background: rgba(6, 6, 7, 0.9);
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity .15s ease;
+	background: rgba(255, 255, 255, 0.97);
 	cursor: zoom-out;
 }
-.lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+.lightbox-overlay.active { display: flex; }
 .lightbox-overlay img {
 	max-width: min(92vw, 1150px);
 	max-height: 88vh;
-	border: 1px solid var(--line-bright);
-	box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+	border: 1px solid var(--line-strong);
 }
 .lightbox-close {
 	position: fixed;
 	top: 1.25rem;
 	right: 1.5rem;
-	font-family: var(--mono);
-	color: var(--fg-dim);
-	font-size: var(--mono-sm);
-	border: 1px solid var(--line-bright);
-	padding: 0.35rem 0.8rem;
-	background: var(--bg-panel);
+	font: inherit;
+	color: var(--fg);
+	background: var(--bg);
+	border: 1px solid var(--line-strong);
+	padding: 0.2rem 0.7rem;
+	cursor: pointer;
 }
 
 /* ---------------- Footer ---------------- */
 
 footer {
 	max-width: var(--content-w);
-	margin: 4rem auto 2.5rem;
-	padding-top: 1.5rem;
+	margin: 3.5rem auto 2.5rem;
+	padding-top: 1rem;
 	border-top: 1px solid var(--line);
-	text-align: center;
-	font-family: var(--mono);
-	font-size: var(--mono-sm);
 	color: var(--fg-faint);
 }
-footer a { color: var(--fg-faint); border-bottom: none; }
-footer a:hover { color: var(--accent); }
+footer a { color: var(--fg-faint); }
+footer a:visited { color: var(--fg-faint); }
 
-/* ---------------- Motion sensitivity ---------------- */
+/* ---------------- Print ----------------
+   The page is already black on white, so printing only needs the
+   interactive leftovers removed and link targets spelled out. */
 
-@media (prefers-reduced-motion: reduce) {
-	html { scroll-behavior: auto; }
-	.card { transition: none; }
+@media print {
+	body { font-size: 11pt; padding: 0; }
+	nav.site-nav, .lightbox-overlay, .stats-panel-select { display: none; }
+	a { color: #000; }
+	/* The one place monospace is used for something that isn't a picture:
+	   a printed URL has to be retyped by hand, and mono is what keeps
+	   l/1 and O/0 apart while doing it. */
+	a[href^="http"]::after {
+		content: " <" attr(href) ">";
+		font-family: var(--mono);
+		font-size: 0.8em;
+	}
 }
+
+/* ---------------- Data primitives ----------------
+   The three shapes any figure on this site is allowed to take: an
+   aligned table, a block of ASCII, or a dated log. All monospace (set
+   above, with code), all ruled rather than boxed. */
+
+/* Booktabs, more or less: a rule above the header, one below it, one
+   under the last row, and nothing between the rows. Row striping and
+   vertical rules both add ink without adding information. */
+table.data {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 0.5rem 0 1.75rem;
+}
+table.data th,
+table.data td {
+	text-align: left;
+	padding: 0.3rem 0.75rem 0.3rem 0;
+	vertical-align: baseline;
+}
+table.data th:last-child,
+table.data td:last-child { padding-right: 0; }
+
+table.data thead th {
+	font-weight: normal;
+	color: var(--fg-faint);
+	border-top: 1px solid var(--line-strong);
+	border-bottom: 1px solid var(--line-strong);
+}
+table.data tbody tr:last-child td { border-bottom: 1px solid var(--line-strong); }
+
+/* Figures right-align on a common decimal position; text stays left. */
+table.data .num {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+/* A one-character gutter for change markers. */
+table.data .col-mark {
+	width: 1.5ch;
+	padding-right: 0.5rem;
+	color: var(--fg-faint);
+}
+
+table.data .is-armband { font-weight: bold; }
+
+/* Five columns of figures don't fit a phone at the optical-match size.
+   This is a fit adjustment, not another step in the type scale. */
+@media (max-width: 460px) {
+	table.data { font-size: 0.74em; }
+	table.data th, table.data td { padding-right: 0.45rem; }
+}
+
+/* ASCII plots. Widths are computed in JS against the measured glyph
+   advance (see assets/charts/distribution.js), so this should never
+   need to scroll — overflow-x is the safety net for when the font
+   substitutes unexpectedly. */
+pre.ascii-plot {
+	line-height: 1.35;
+	white-space: pre;
+	overflow-x: auto;
+	margin: 0.5rem 0 1.75rem;
+}
+
+/* Dated event log: term column, detail column, no rail and no rules. */
+dl.log {
+	display: grid;
+	grid-template-columns: 5.5ch 1fr;
+	gap: 0.2rem 1rem;
+	margin: 0.5rem 0 0;
+}
+dl.log dt { color: var(--fg-faint); }
+dl.log dd { margin: 0; }

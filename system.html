@@ -7,7 +7,7 @@
 <meta name="description" content="Software and hardware Linus Jeary uses day to day, on both PC and laptop.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <link rel="stylesheet" type="text/css" href="assets/style.css">
 <link rel="icon" href="favicon.png">
 </head>
@@ -28,46 +28,42 @@
 
 <h2>Operating Systems + Desktop</h2>
 
-<div class="card-grid">
+<div class="entry entry--figure">
+	<img src="assets/manjaro-pc-thumb.webp" data-lightbox="assets/manjaro-pc-full.webp" data-alt="Manjaro + KDE Plasma desktop on the PC" alt="Manjaro + KDE Plasma desktop on the PC" loading="lazy">
+	<div>
+		<h3>PC &mdash; Manjaro + KDE Plasma</h3>
+		<p class="meta">Manjaro &middot; KDE Plasma &middot; Konsole</p>
+		<p><a href="https://manjaro.org/">Manjaro</a>, an Arch-based distro that's never given me a real problem, so I never left. I stick to Pacman and a select few AUR packages and avoid Flatpak/Snap/AppImage to keep things simple. On the desktop I run Plasma with kwin and Konsole &mdash; for a less minimalist, but cleaner experience.</p>
+	</div>
+</div>
 
-	<article class="card">
-		<img class="card-thumb" src="assets/manjaro-pc-thumb.webp" data-lightbox="assets/manjaro-pc-full.webp" data-alt="Manjaro + KDE Plasma desktop on the PC" alt="Manjaro + KDE Plasma desktop on the PC" loading="lazy">
-		<div class="card-body">
-			<h3>&#128421;&#65039; PC &mdash; Manjaro + KDE Plasma</h3>
-			<p><a href="https://manjaro.org/">Manjaro</a>, an Arch-based distro that's never given me a real problem, so I never left. I stick to Pacman and a select few AUR packages and avoid Flatpak/Snap/AppImage to keep things simple. On the desktop I run Plasma with kwin and Konsole &mdash; for a less minimalist, but cleaner experience.</p>
-			<div class="tags"><span class="tag">Manjaro</span><span class="tag">KDE Plasma</span><span class="tag">Konsole</span></div>
-		</div>
-	</article>
-
-	<article class="card">
-		<img class="card-thumb" src="assets/manjaro-sway-laptop-thumb.webp" data-lightbox="assets/manjaro-sway-laptop-full.webp" data-alt="Manjaro + Sway on the ThinkPad laptop" alt="Manjaro + Sway on the ThinkPad laptop" loading="lazy">
-		<div class="card-body">
-			<h3>&#128187; Laptop &mdash; Manjaro + Sway</h3>
-			<p>Same distro, different window manager: a ThinkPad X1 Carbon (Gen 10) running <a href="https://swaywm.org/">Sway</a>, a tiling Wayland compositor, with <a href="https://codeberg.org/dnkl/foot">foot</a> as the terminal and zsh as the shell. Tiling makes far better use of a smaller laptop screen than a floating desktop would.</p>
-			<div class="tags"><span class="tag">Manjaro</span><span class="tag">Sway</span><span class="tag">foot</span></div>
-		</div>
-	</article>
-
+<div class="entry entry--figure">
+	<img src="assets/manjaro-sway-laptop-thumb.webp" data-lightbox="assets/manjaro-sway-laptop-full.webp" data-alt="Manjaro + Sway on the ThinkPad laptop" alt="Manjaro + Sway on the ThinkPad laptop" loading="lazy">
+	<div>
+		<h3>Laptop &mdash; Manjaro + Sway</h3>
+		<p class="meta">Manjaro &middot; Sway &middot; foot</p>
+		<p>Same distro, different window manager: a ThinkPad X1 Carbon (Gen 10) running <a href="https://swaywm.org/">Sway</a>, a tiling Wayland compositor, with <a href="https://codeberg.org/dnkl/foot">foot</a> as the terminal and zsh as the shell. Tiling makes far better use of a smaller laptop screen than a floating desktop would.</p>
+	</div>
 </div>
 
 <p>I connect the two over <a href="https://netbird.io/">Netbird</a>, a WireGuard-based mesh VPN. Allows me to ssh between my PC and laptop wherever I'm working from, without opening ports on my home network.</p>
 
-<h3 id="general-software">General Software</h3>
+<h2 id="general-software">General Software</h2>
 
 <dl class="simple-list">
-	<dt>&#127760; Web browser</dt>
+	<dt>Web browser</dt>
 	<dd>Firefox, with a lightly edited copy of the <a href="https://github.com/arkenfox/user.js">arkenfox user.js</a> for privacy hardening, plus <a href="https://ublockorigin.com/">uBlock Origin</a> to block ads and trackers. <a href="https://github.com/ungoogled-software/ungoogled-chromium">ungoogled-chromium</a> occasionally when something needs a Chromium engine.</dd>
 
-	<dt>&#128269; Search engine</dt>
+	<dt>Search engine</dt>
 	<dd><a href="https://duckduckgo.com/about">DuckDuckGo</a> &mdash; Will there ever be a perfect search engine? This will do for now.</dd>
 
-	<dt><img class="icon" src="assets/codium.svg" alt=""> IDE</dt>
+	<dt>IDE</dt>
 	<dd><a href="https://code.visualstudio.com/">VSCode</a> &mdash; I would use VSCodium but the remote development features are too useful.</dd>
 
-	<dt>&#128196; PDF viewer</dt>
+	<dt>PDF viewer</dt>
 	<dd><a href="https://sioyek.info/">sioyek</a> &mdash; a keyboard-driven, minimal PDF viewer built for comfortably reading technical papers.</dd>
 
-	<dt>&#128193; Text editor</dt>
+	<dt>Text editor</dt>
 	<dd><a href="https://neovim.io/">Neovim</a> &mdash; beautiful vim-based text editor.</dd>
 </dl>
 
@@ -75,29 +71,28 @@
 
 <h3>PC</h3>
 <dl class="simple-list">
-	<dt><img class="icon" src="assets/gpu.svg" alt=""> Graphics Card</dt>
+	<dt>Graphics card</dt>
 	<dd>NVIDIA GeForce RTX 3060</dd>
 
-	<dt><img class="icon" src="assets/cpu.svg" alt=""> CPU</dt>
+	<dt>CPU</dt>
 	<dd>AMD Ryzen 9 5950X &mdash; 16 cores, 32 threads. A compiler's dream.</dd>
 
-	<dt><img class="icon" src="assets/ram.svg" alt=""> Memory</dt>
+	<dt>Memory</dt>
 	<dd>32GB DDR4</dd>
 </dl>
 
 <h3>Laptop</h3>
 <dl class="simple-list">
-	<dt>&#128421;&#65039; Model</dt>
+	<dt>Model</dt>
 	<dd>ThinkPad X1 Carbon, Gen 10</dd>
 
-	<dt><img class="icon" src="assets/cpu.svg" alt=""> CPU</dt>
+	<dt>CPU</dt>
 	<dd>12th Gen Intel Core i7-1260P (12 cores / 16 threads) with integrated Iris Xe graphics</dd>
 
-	<dt><img class="icon" src="assets/ram.svg" alt=""> Memory</dt>
+	<dt>Memory</dt>
 	<dd>16GB DDR4</dd>
 </dl>
 
-<br clear="all">
 </article>
 </main>
 

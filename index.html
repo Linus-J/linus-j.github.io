@@ -7,7 +7,7 @@
 <meta name="description" content="Linus Jeary — Data Scientist and machine learning researcher working on adversarial robustness and formal verification.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <link rel="stylesheet" type="text/css" href="assets/style.css">
 <link rel="icon" href="favicon.png">
 <meta property="og:title" content="Linus Jeary">
@@ -17,29 +17,29 @@
 <body>
 <main>
 
-<header class="site-header">
-	<h1>Linus Jeary</h1>
-	<p class="tagline">Data Scientist &middot; ML researcher &middot; London</p>
-	<nav class="site-nav">
-		<a href="/" class="current">Home</a><a href="system">System</a><a href="fpl">FPL</a><a href="contact">Contact</a>
-	</nav>
+<header class="site-header site-header--portrait">
+	<img class="portrait" src="assets/me-thumb.webp" alt="Linus Jeary" width="118" height="118">
+	<div>
+		<h1>Linus Jeary</h1>
+		<p class="tagline">Data Scientist &middot; ML researcher &middot; London</p>
+		<nav class="site-nav">
+			<a href="/" class="current">Home</a><a href="system">System</a><a href="fpl">FPL</a><a href="contact">Contact</a>
+		</nav>
+	</div>
 </header>
 
 <article>
 
-<section class="hero">
-	<img class="hero-photo" src="assets/me-thumb.webp" alt="Linus Jeary" width="148" height="148">
-	<div class="hero-text">
-		<p>Data Scientist at Shift Technology in London, building production fraud-detection systems, and a machine learning researcher working on adversarial robustness and formal verification.</p>
-		<p>MSc Artificial Intelligence (King's College London, Distinction) and BSc Computer Science with Mathematics (Warwick). </p>
-		<p>First-authored work on robustness certification for conformal prediction, published at <a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0814a342597d65e0832fc7ec9b42c317-Abstract-Conference.html">NeurIPS (2024)</a> and extended in <a href="https://www.sciencedirect.com/science/article/pii/S0031320325007113">Pattern Recognition (2025)</a>.</p>
-		<div class="hero-links">
-			<a href="https://github.com/Linus-J">GitHub</a>
-			<a href="https://www.linkedin.com/in/linus-jeary">LinkedIn</a>
-			<a href="https://scholar.google.co.uk/citations?user=MBDXoi0AAAAJ&amp;hl=en">Scholar</a>
-			<a href="contact">Contact</a>
-		</div>
-	</div>
+<section>
+	<p>Data Scientist at Shift Technology in London, building production fraud-detection systems, and a machine learning researcher working on adversarial robustness and formal verification.</p>
+	<p>MSc Artificial Intelligence (King's College London, Distinction) and BSc Computer Science with Mathematics (Warwick).</p>
+	<p>First-authored work on robustness certification for conformal prediction, published at <a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0814a342597d65e0832fc7ec9b42c317-Abstract-Conference.html">NeurIPS (2024)</a> and extended in <a href="https://www.sciencedirect.com/science/article/pii/S0031320325007113">Pattern Recognition (2025)</a>.</p>
+	<p class="meta">
+		<a href="https://github.com/Linus-J">GitHub</a> &middot;
+		<a href="https://www.linkedin.com/in/linus-jeary">LinkedIn</a> &middot;
+		<a href="https://scholar.google.co.uk/citations?user=MBDXoi0AAAAJ&amp;hl=en">Scholar</a> &middot;
+		<a href="contact">Contact</a>
+	</p>
 </section>
 
 <section class="locale">
@@ -48,7 +48,7 @@
 	<div class="readout">
 		<div class="readout-row">
 			<span class="readout-label">Linus &mdash; London</span>
-			<span class="readout-value readout-value--live" id="clock-linus-time">--:--:--</span>
+			<span class="readout-value" id="clock-linus-time">--:--:--</span>
 		</div>
 		<div class="readout-row">
 			<span class="readout-label">You &mdash; <span id="clock-you-place">&hellip;</span></span>
@@ -71,62 +71,51 @@
 
 <h2 id="projects">Selected Projects</h2>
 
-<div class="card-grid">
-
-	<article class="card card--text">
-		<div class="card-body">
-			<h3>&#128737;&#65039; Verifiably Robust Conformal Prediction</h3>
-			<p>A framework certifying that conformal prediction coverage guarantees survive adversarial input perturbations, combining conformal prediction with neural network verification. First-authored; NeurIPS (2024), extended in Pattern Recognition (2025).</p>
-			<div class="tags"><span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">Verification</span></div>
-			<div class="card-links">
-				<a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0814a342597d65e0832fc7ec9b42c317-Abstract-Conference.html">NeurIPS 2024 &rarr;</a>
-				<a href="https://github.com/ddv-lab/Verifiably_Robust_CP">GitHub &rarr;</a>
-			</div>
-		</div>
-	</article>
-
-	<article class="card card--text">
-		<div class="card-body">
-			<h3>&#9917; FPL 26/27 Decision Engine</h3>
-			<p>A data-driven Fantasy Premier League decision engine: a Monte Carlo projection pipeline, ILP-based squad/transfer optimisation, and a Streamlit dashboard for tracking live squad, fixtures, and decision history. Final squad selections are currently human-in-the-loop.</p>
-			<div class="tags"><span class="tag">Python</span><span class="tag">Streamlit</span><span class="tag">Monte Carlo</span></div>
-			<div class="card-links"><a href="https://github.com/Linus-J/FPL-decision-engine">GitHub &rarr;</a></div>
-		</div>
-	</article>
-
-	<article class="card card--text">
-		<div class="card-body">
-			<h3>&#9824;&#65039; Prime-Safe Opponent Exploitation</h3>
-			<p>BSc dissertation (Warwick, supervised by P. Turrini): algorithms that exploit a predictable opponent in imperfect-information games while provably keeping an &epsilon;-equilibrium safety margin. Published as an arXiv preprint.</p>
-			<div class="tags"><span class="tag">Python</span><span class="tag">Game Theory</span></div>
-			<div class="card-links">
-				<a href="https://arxiv.org/pdf/2307.12338">arXiv &rarr;</a>
-				<a href="https://github.com/Linus-J/prime-safe-opponent-exploitation">GitHub &rarr;</a>
-			</div>
-		</div>
-	</article>
-
-	<article class="card card--text">
-		<div class="card-body">
-			<h3>&#127183; Counterfactual Regret Minimisation in C</h3>
-			<p>High-performance CFR implementations (vanilla, CFR+, MCCFR) written in C for speed &mdash; roughly 10&times; faster than an equivalent Python version. Computes Nash-equilibrium strategies for imperfect-information games like Kuhn and Leduc poker.</p>
-			<div class="tags"><span class="tag">C</span><span class="tag">Game Theory</span></div>
-			<div class="card-links"><a href="https://github.com/Linus-J/CFR-in-C">GitHub &rarr;</a></div>
-		</div>
-	</article>
-
-	<article class="card card--text">
-		<div class="card-body">
-			<h3>&#128290; Autoencoder from Scratch</h3>
-			<p>The same autoencoder &mdash; two dense encoder/decoder layers, Adam optimiser &mdash; implemented three times (NumPy, Cython, raw C) to compare execution speed across language tiers with no framework dependency.</p>
-			<div class="tags"><span class="tag">Python</span><span class="tag">Cython</span><span class="tag">C</span></div>
-			<div class="card-links"><a href="https://github.com/Linus-J/autoencoder-from-scratch">GitHub &rarr;</a></div>
-		</div>
-	</article>
-
+<div class="entry">
+	<h3>Verifiably Robust Conformal Prediction</h3>
+	<p class="meta">Python &middot; PyTorch &middot; Neural network verification</p>
+	<p>A framework certifying that conformal prediction coverage guarantees survive adversarial input perturbations, combining conformal prediction with neural network verification. First-authored; NeurIPS (2024), extended in Pattern Recognition (2025).</p>
+	<p class="entry-links">
+		<a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/0814a342597d65e0832fc7ec9b42c317-Abstract-Conference.html">NeurIPS 2024 &rarr;</a>
+		<a href="https://github.com/ddv-lab/Verifiably_Robust_CP">GitHub &rarr;</a>
+	</p>
 </div>
 
-<p class="mono" style="text-align:center;margin-top:1.75rem;"><a href="https://github.com/Linus-J">&rarr; more on GitHub</a></p>
+<div class="entry">
+	<h3>FPL 26/27 Decision Engine</h3>
+	<p class="meta">Python &middot; Monte Carlo &middot; Integer programming</p>
+	<p>A data-driven Fantasy Premier League decision engine: a Monte Carlo projection pipeline, ILP-based squad/transfer optimisation, and a Streamlit dashboard for tracking live squad, fixtures, and decision history. Final squad selections are currently human-in-the-loop.</p>
+	<p class="entry-links">
+		<a href="fpl">Live status &rarr;</a>
+		<a href="https://github.com/Linus-J/FPL-decision-engine">GitHub &rarr;</a>
+	</p>
+</div>
+
+<div class="entry">
+	<h3>Prime-Safe Opponent Exploitation</h3>
+	<p class="meta">Python &middot; Game theory</p>
+	<p>BSc dissertation (Warwick, supervised by P. Turrini): algorithms that exploit a predictable opponent in imperfect-information games while provably keeping an &epsilon;-equilibrium safety margin. Published as an arXiv preprint.</p>
+	<p class="entry-links">
+		<a href="https://arxiv.org/pdf/2307.12338">arXiv &rarr;</a>
+		<a href="https://github.com/Linus-J/prime-safe-opponent-exploitation">GitHub &rarr;</a>
+	</p>
+</div>
+
+<div class="entry">
+	<h3>Counterfactual Regret Minimisation in C</h3>
+	<p class="meta">C &middot; Game theory</p>
+	<p>High-performance CFR implementations (vanilla, CFR+, MCCFR) written in C for speed &mdash; roughly 10&times; faster than an equivalent Python version. Computes Nash-equilibrium strategies for imperfect-information games like Kuhn and Leduc poker.</p>
+	<p class="entry-links"><a href="https://github.com/Linus-J/CFR-in-C">GitHub &rarr;</a></p>
+</div>
+
+<div class="entry">
+	<h3>Autoencoder from Scratch</h3>
+	<p class="meta">Python &middot; Cython &middot; C</p>
+	<p>The same autoencoder &mdash; two dense encoder/decoder layers, Adam optimiser &mdash; implemented three times (NumPy, Cython, raw C) to compare execution speed across language tiers with no framework dependency.</p>
+	<p class="entry-links"><a href="https://github.com/Linus-J/autoencoder-from-scratch">GitHub &rarr;</a></p>
+</div>
+
+<p class="entry-links" style="margin-top:1.75rem;"><a href="https://github.com/Linus-J">More on GitHub &rarr;</a></p>
 
 </article>
 </main>
