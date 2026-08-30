@@ -5,12 +5,25 @@
 var StatsPanel = (function () {
 	var SUPPORTED_SCHEMA_VERSION = 1;
 
-	function jsDelivrUrl(repo, ref, path, file) {
-		return "https://cdn.jsdelivr.net/gh/" + repo + "@" + ref + "/" + path + "/" + file;
+	/* `version` is a cache-buster, not something jsDelivr reads. jsDelivr
+	   serves these with `max-age=604800`, so a returning visitor's browser
+	   holds a run file for a week -- purging the CDN clears its edge, not
+	   their cache. That made a corrected export invisible to exactly the
+	   people who had already seen the wrong one (2026-08-30), and would do
+	   the same to every ordinary weekly update.
+
+	   index.json is the one request that must always be fresh, since it
+	   carries the versions everything else is keyed on; it asks for a
+	   revalidation instead. That is one conditional request per page load,
+	   and the run files -- the large ones -- stay cacheable forever under a
+	   URL that changes whenever their contents do. */
+	function jsDelivrUrl(repo, ref, path, file, version) {
+		return "https://cdn.jsdelivr.net/gh/" + repo + "@" + ref + "/" + path + "/" + file +
+			(version ? "?v=" + encodeURIComponent(version) : "");
 	}
 
-	function fetchJson(url) {
-		return fetch(url).then(function (res) {
+	function fetchJson(url, options) {
+		return fetch(url, options).then(function (res) {
 			if (!res.ok) throw new Error("fetch failed: " + res.status + " " + url);
 			return res.json();
 		});
@@ -22,8 +35,8 @@ var StatsPanel = (function () {
 	   additive keys must not bump it. The mismatch is tagged so the failure
 	   reads as "the page is stale", not "the network is down" — otherwise a
 	   future bump looks identical to an outage. */
-	function fetchSupportedJson(url) {
-		return fetchJson(url).then(function (data) {
+	function fetchSupportedJson(url, options) {
+		return fetchJson(url, options).then(function (data) {
 			if (data.schema_version !== SUPPORTED_SCHEMA_VERSION) {
 				var err = new Error(
 					"unsupported schema_version " + data.schema_version + " at " + url +
@@ -85,7 +98,9 @@ var StatsPanel = (function () {
 
 		var ref = panel.ref || "main";
 
-		return fetchSupportedJson(jsDelivrUrl(panel.repo, ref, panel.path, "index.json"))
+		return fetchSupportedJson(
+			jsDelivrUrl(panel.repo, ref, panel.path, "index.json"), { cache: "no-cache" }
+		)
 			.catch(function (err) {
 				root.setAttribute("data-state", "error");
 				renderMessage(body, failureText(err), panel.fallbackUrl, "View the source repo instead →");
@@ -100,16 +115,17 @@ var StatsPanel = (function () {
 					return;
 				}
 
-				var currentRun = null;
+				var versionOf = {};
+				index.runs.forEach(function (run) { versionOf[run.id] = run.generated_at; });
 
 				function loadRun(runId) {
 					root.setAttribute("data-state", "loading");
 					renderMessage(body, "Loading…");
-					return fetchSupportedJson(jsDelivrUrl(panel.repo, ref, panel.path, runId + ".json"))
+					var url = jsDelivrUrl(panel.repo, ref, panel.path, runId + ".json", versionOf[runId]);
+					return fetchSupportedJson(url)
 						.then(function (run) {
 							root.setAttribute("data-state", "ready");
-							panel.renderRun(body, run, currentRun);
-							currentRun = run;
+							panel.renderRun(body, run);
 						})
 						.catch(function (err) {
 							root.setAttribute("data-state", "error");

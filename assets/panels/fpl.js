@@ -64,10 +64,10 @@ var FplPanel = (function () {
 		return tr;
 	}
 
-	function playerRow(player, prevIds, showMarks) {
+	function playerRow(player, showMarks) {
 		var tr = el("tr");
 		if (showMarks) {
-			cell(tr, prevIds && !prevIds.has(player.player_id) ? "+" : "", "col-mark");
+			cell(tr, player.transferred_in ? "+" : "", "col-mark");
 		}
 
 		var name = cell(tr, player.web_name + armband(player));
@@ -83,12 +83,12 @@ var FplPanel = (function () {
 		return tr;
 	}
 
-	function buildTable(players, prevIds, showMarks) {
+	function buildTable(players, showMarks) {
 		var table = el("table", "data");
 		var thead = el("thead");
 		thead.appendChild(headerRow(showMarks));
 		var tbody = el("tbody");
-		players.forEach(function (p) { tbody.appendChild(playerRow(p, prevIds, showMarks)); });
+		players.forEach(function (p) { tbody.appendChild(playerRow(p, showMarks)); });
 		table.appendChild(thead);
 		table.appendChild(tbody);
 		return table;
@@ -100,15 +100,24 @@ var FplPanel = (function () {
 		return (b.xpts ? b.xpts.mean : -Infinity) - (a.xpts ? a.xpts.mean : -Infinity);
 	}
 
-	function buildSquadSection(squad, prevIds) {
+	/* Who arrived this gameweek is published per player, straight from the
+	   decision the bot acted on. It used to be inferred here by diffing the
+	   squad against whichever gameweek the visitor last had open, which made
+	   the mark depend on click order rather than on the data: the panel opens
+	   on the newest gameweek, so selecting GW1 diffed GW1 against GW2 and put
+	   a "+" on the two players GW2 had transferred OUT, on the one squad that
+	   was drafted rather than transferred into (2026-08-30).
+
+	   Runs published before the field existed simply carry no marks. */
+	function buildSquadSection(squad) {
 		var section = el("section");
-		var showMarks = !!prevIds && squad.some(function (p) { return !prevIds.has(p.player_id); });
+		var showMarks = squad.some(function (p) { return p.transferred_in; });
 
 		section.appendChild(key(
 			"xPts = mean projected points · 10-90 = " +
 			Distribution.describeBasis(Distribution.basisOf(squad)) +
 			" · cost in millions · (C) captain, (V) vice-captain" +
-			(showMarks ? " · + = new since the gameweek you last viewed" : "")
+			(showMarks ? " · + = transferred in this gameweek" : "")
 		));
 
 		var starters = squad.filter(function (p) { return p.is_starting; }).sort(byPositionThenXpts);
@@ -117,11 +126,11 @@ var FplPanel = (function () {
 			.sort(function (a, b) { return (a.bench_order || 0) - (b.bench_order || 0); });
 
 		section.appendChild(heading("Starting XI"));
-		section.appendChild(buildTable(starters, prevIds, showMarks));
+		section.appendChild(buildTable(starters, showMarks));
 
 		if (bench.length) {
 			section.appendChild(heading("Bench"));
-			section.appendChild(buildTable(bench, prevIds, showMarks));
+			section.appendChild(buildTable(bench, showMarks));
 		}
 		return section;
 	}
@@ -151,15 +160,11 @@ var FplPanel = (function () {
 		return section;
 	}
 
-	function renderRun(body, run, prevRun) {
-		var prevIds = prevRun
-			? new Set(prevRun.squad.map(function (p) { return p.player_id; }))
-			: null;
-
+	function renderRun(body, run) {
 		var top15 = buildTop15Section(run.top15);
 
 		body.innerHTML = "";
-		body.appendChild(buildSquadSection(run.squad, prevIds));
+		body.appendChild(buildSquadSection(run.squad));
 		body.appendChild(top15.section);
 		body.appendChild(buildHistorySection(run.history));
 
