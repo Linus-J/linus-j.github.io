@@ -22,6 +22,12 @@ var Timeline = (function () {
 			// is enough to set them apart from routine transfer rows.
 			return event.reason ? event.chip + " played — " + event.reason : event.chip + " played";
 		}
+		// The opening gameweek has no transfers to describe — there is no
+		// squad to transfer out of yet — so the engine publishes the draft
+		// itself as the event. Without this the week rendered as a blank
+		// definition under its own term, which reads as a bug rather than
+		// as "nothing was traded here".
+		if (event.type === "initial_squad") return "Initial squad selected";
 		return "";
 	}
 
