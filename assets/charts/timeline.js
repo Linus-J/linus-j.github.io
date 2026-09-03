@@ -5,6 +5,35 @@
 
 var Timeline = (function () {
 
+	// The engine logs chips by their internal id, not a display name.
+	var CHIP_NAMES = {
+		freehit: "Free Hit",
+		wildcard: "Wildcard",
+		"3xc": "Triple Captain",
+		bboost: "Bench Boost"
+	};
+
+	function chipDisplayName(chip) {
+		return CHIP_NAMES[chip] || chip;
+	}
+
+	// The engine's `reason` for a Free Hit/Wildcard is built as
+	// "beats no-chip by X xPts — <detail>", where <detail> itself starts by
+	// restating the chip's own name ("free hit: ..." / "wildcard: ...") —
+	// redundant once the event already leads with "<Chip> played". Splitting
+	// on the first " — " and dropping that restatement turns what was three
+	// dash-joined clauses piled onto one line into two short sentences.
+	// Other chips' reasons (3xc, bboost) carry no " — " at all and pass
+	// through unchanged.
+	function cleanChipReason(reason) {
+		var sep = reason.indexOf(" — ");
+		if (sep === -1) return reason;
+		var summary = reason.slice(0, sep);
+		var detail = reason.slice(sep + 3).replace(/^[a-z][a-z ]*:\s*/i, "");
+		if (!detail) return summary + ".";
+		return summary + ". " + detail.charAt(0).toUpperCase() + detail.slice(1) + ".";
+	}
+
 	function describeEvent(event) {
 		if (event.type === "transfers") {
 			var inNames = event.transfers_in.length ? event.transfers_in.join(", ") : "none";
@@ -20,7 +49,8 @@ var Timeline = (function () {
 		if (event.type === "chip") {
 			// Chips are the rare, deliberate events; naming the chip first
 			// is enough to set them apart from routine transfer rows.
-			return event.reason ? event.chip + " played — " + event.reason : event.chip + " played";
+			var name = chipDisplayName(event.chip);
+			return event.reason ? name + " played — " + cleanChipReason(event.reason) : name + " played";
 		}
 		// The opening gameweek has no transfers to describe — there is no
 		// squad to transfer out of yet — so the engine publishes the draft

@@ -139,11 +139,14 @@ var FplPanel = (function () {
 	   The plot sizes its columns to the measured width of that node, so it
 	   can only be drawn once the section is in the document — hence the
 	   split between building this and filling it in renderRun. */
-	function buildTop15Section(top15) {
+	function buildTop15Section(top15, gameweek) {
 		var section = el("section");
 		var chart = el("div");
 
-		section.appendChild(heading("Top 15 by xPts"));
+		// "by xPts" read as if this were a season-long leaderboard; it is
+		// one gameweek's projection, replaced whole the moment the next
+		// run publishes.
+		section.appendChild(heading("Top 15 — GW" + gameweek));
 		section.appendChild(key(Distribution.hasSpread(top15)
 			? "# = mean xPts · [....] = " + Distribution.describeBasis(Distribution.basisOf(top15))
 			: "# = mean xPts"));
@@ -161,7 +164,7 @@ var FplPanel = (function () {
 	}
 
 	function renderRun(body, run) {
-		var top15 = buildTop15Section(run.top15);
+		var top15 = buildTop15Section(run.top15, run.gameweek);
 
 		body.innerHTML = "";
 		body.appendChild(buildSquadSection(run.squad));
