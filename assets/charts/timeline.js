@@ -17,21 +17,10 @@ var Timeline = (function () {
 		return CHIP_NAMES[chip] || chip;
 	}
 
-	// The engine's `reason` for a Free Hit/Wildcard is built as
-	// "beats no-chip by X xPts — <detail>", where <detail> itself starts by
-	// restating the chip's own name ("free hit: ..." / "wildcard: ...") —
-	// redundant once the event already leads with "<Chip> played". Splitting
-	// on the first " — " and dropping that restatement turns what was three
-	// dash-joined clauses piled onto one line into two short sentences.
-	// Other chips' reasons (3xc, bboost) carry no " — " at all and pass
-	// through unchanged.
-	function cleanChipReason(reason) {
-		var sep = reason.indexOf(" — ");
-		if (sep === -1) return reason;
-		var summary = reason.slice(0, sep);
-		var detail = reason.slice(sep + 3).replace(/^[a-z][a-z ]*:\s*/i, "");
-		if (!detail) return summary + ".";
-		return summary + ". " + detail.charAt(0).toUpperCase() + detail.slice(1) + ".";
+	// Every event in this log is read as a gain in xPts, so they all format
+	// it the same way.
+	function formatGain(xpts) {
+		return (xpts >= 0 ? "+" : "") + xpts.toFixed(1) + " xPts";
 	}
 
 	function describeEvent(event) {
@@ -41,16 +30,19 @@ var Timeline = (function () {
 			var hits = event.hits_taken
 				? " (" + event.hits_taken + " hit" + (event.hits_taken > 1 ? "s" : "") + ")"
 				: "";
-			var gain = event.net_xpts_gain >= 0
-				? "+" + event.net_xpts_gain.toFixed(1)
-				: event.net_xpts_gain.toFixed(1);
-			return outNames + " → " + inNames + hits + ", " + gain + " xPts";
+			return outNames + " → " + inNames + hits + ", " + formatGain(event.net_xpts_gain);
 		}
 		if (event.type === "chip") {
 			// Chips are the rare, deliberate events; naming the chip first
-			// is enough to set them apart from routine transfer rows.
-			var name = chipDisplayName(event.chip);
-			return event.reason ? name + " played — " + cleanChipReason(event.reason) : name + " played";
+			// is enough to set them apart from routine transfer rows. The
+			// engine also logs a free-form `reason`, and rendering it put a
+			// sentence — sometimes three dash-joined clauses — where every
+			// other row of the column is a number. The gain is the one thing
+			// the reason was there to say, and the data now publishes it.
+			var name = chipDisplayName(event.chip) + " played";
+			return typeof event.net_xpts_gain === "number"
+				? name + ", " + formatGain(event.net_xpts_gain)
+				: name;
 		}
 		// The opening gameweek has no transfers to describe — there is no
 		// squad to transfer out of yet — so the engine publishes the draft
