@@ -13,13 +13,18 @@ var StatsPanel = (function () {
 	   the same to every ordinary weekly update.
 
 	   index.json is the one request that must always be fresh, since it
-	   carries the versions everything else is keyed on; it asks for a
-	   revalidation instead. That is one conditional request per page load,
-	   and the run files -- the large ones -- stay cacheable forever under a
-	   URL that changes whenever their contents do. */
+	   carries the versions everything else is keyed on. jsDelivr caches a
+	   branch file at its edge for hours whatever the browser asks for, so
+	   index.json comes from GitHub's raw host instead: it serves it with
+	   max-age=300 and needs no purge. The run files -- the large ones --
+	   stay on jsDelivr under a URL that changes whenever their contents do. */
 	function jsDelivrUrl(repo, ref, path, file, version) {
 		return "https://cdn.jsdelivr.net/gh/" + repo + "@" + ref + "/" + path + "/" + file +
 			(version ? "?v=" + encodeURIComponent(version) : "");
+	}
+
+	function rawUrl(repo, ref, path, file) {
+		return "https://raw.githubusercontent.com/" + repo + "/" + ref + "/" + path + "/" + file;
 	}
 
 	function fetchJson(url, options) {
@@ -99,7 +104,7 @@ var StatsPanel = (function () {
 		var ref = panel.ref || "main";
 
 		return fetchSupportedJson(
-			jsDelivrUrl(panel.repo, ref, panel.path, "index.json"), { cache: "no-cache" }
+			rawUrl(panel.repo, ref, panel.path, "index.json"), { cache: "no-cache" }
 		)
 			.catch(function (err) {
 				root.setAttribute("data-state", "error");
